@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+  .bg-gradient-blue {
+    background: linear-gradient(90deg, #007bff, #00bfff);
+    color: white !important;
+  }
+
+  .readonly-field {
+    padding: 12px 16px;
+    border: none;
+    background-color: #f1f3f5;
+    border-radius: 10px;
+    width: 100%;
+    font-weight: 500;
+  }
+
+  .mic-button {
+    color: white;
+    background-color: gray;
+    border: none;
+    border-radius: 50%;
+    padding: 10px 12px;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .mic-button:hover {
+    background-color: #343a40;
+  }
+
+  .mic-button.listening {
+    background-color: red;
+    animation: pulse 1s infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.15); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .item-box {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  }
+</style>
+
+<div class="container mt-4">
+  <div class="p-3 rounded shadow-sm bg-gradient-blue mb-4">
+    <h3 class="mb-0 text-white fw-bold">🎤 {{ t['voice_add_expense']|default("Voice Add Expense") }}</h3>
+  </div>
+
+  <!-- Category Field -->
+  <div class="mb-3">
+    <label class="form-label fw-semibold">{{ t['category']|default("Category") }}:</label>
+    <div class="d-flex align-items-center">
+      <div class="readonly-field" id="category"></div>
+      <button class="mic-button" onclick="captureField('category')"><i class="fas fa-microphone"></i></button>
+    </div>
+  </div>
+
+  <!-- Item Entries -->
+  <div id="items-container"></div>
+
+  <!-- Controls -->
+  <button class="btn btn-outline-secondary w-100 mb-2" onclick="addNewItemBox()">➕ {{ t['add_item']|default("Add Item") }}</button>
+  <button class="btn btn-success w-100 mb-3" onclick="submitExpense()">✅ {{ t['submit']|default("Submit") }}</button>
+
+  <div id="status" class="mt-3 text-success fw-semibold text-center"></div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="postExpenseModal" tabindex="-1" aria-labelledby="expenseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-3 shadow">
+        <div class="modal-header bg-gradient-blue text-white">
+          <h5 class="modal-title" id="expenseModalLabel">✅ {{ t['expense_saved']|default("Expense Saved") }}</h5>
+        </div>
+        <div class="modal-body text-center">
+          <p class="fs-5">{{ t['what_next']|default("What would you like to do next?") }}</p>
+        </div>
+        <div class="modal-footer d-flex justify-content-between">
+          <button type="button" class="btn btn-dark w-50" onclick="startNewExpense()" data-bs-dismiss="modal">➕ {{ t['add_expense']|default("Add Expense") }}</button>
+          <a href="/viewexpense" class="btn btn-outline-primary w-50">📋 {{ t['view_expenses']|default("View Expenses") }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Quick Links -->
+  <div class="d-flex justify-content-between mt-3">
+    <a href="/viewexpense" class="btn btn-outline-primary w-50 me-2">📋 {{ t['view_expenses']|default("View Expenses") }}</a>
+    <a href="/voice_add_expense_ui" class="btn btn-outline-success w-50 ms-2">➕ {{ t['new_expense']|default("New Expense") }}</a>
+  </div>
+</div>
+
+<script>
+const currentLang = "{{ session['lang'] or 'en' }}";
+const langMap = {
+  en: 'en-IN', kn: 'kn-IN', hi: 'hi-IN', ta: 'ta-IN',
+  te: 'te-IN', ml: 'ml-IN', bn: 'bn-IN'
+};
+
+let expenseData = { category: '', items: [] };
+
+function captureField(field, index = null) {
+  document.querySelectorAll('.mic-button').forEach(btn => btn.classList.remove('listening'));
+  const btn = event.currentTarget;
+  btn.classList.add('listening');
+
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = langMap[currentLang] || 'en-IN';
+  recognition.interimResults = false;
+  recognition.start();
+
+  recognition.onresult = (e) => {
+    const text = e.results[0][0].transcript.trim();
+    if (field === 'category') {
+      expenseData.category = text;
+      document.getElementById('category').innerText = text;
+    } else {
+      document.getElementById(`${field}-${index}`).innerText = text;
+      expenseData.items[index][field] = text;
+    }
+    document.getElementById('status').innerText = `✅ Captured ${field}`;
+    btn.classList.remove('listening');
+  };
+
+  recognition.onerror = (e) => {
+    document.getElementById('status').innerText = `❌ Error: ${e.error}`;
+    btn.classList.remove('listening');
+  };
+}
+
+function addNewItemBox() {
+  const idx = expenseData.items.length;
+  expenseData.items.push({ itemname: '', quantity: '', rate: '' });
+
+  const box = document.createElement('div');
+  box.className = 'item-box';
+  box.innerHTML = `
+    <div class="mb-2">
+      <label class="fw-semibold">{{ t['item']|default("Item") }}:</label>
+      <div class="d-flex align-items-center">
+        <div class="readonly-field" id="itemname-${idx}"></div>
+        <button class="mic-button" onclick="captureField('itemname', ${idx})"><i class="fas fa-microphone"></i></button>
+      </div>
+    </div>
+    <div class="mb-2">
+      <label class="fw-semibold">{{ t['quantity']|default("Quantity") }}:</label>
+      <div class="d-flex align-items-center">
+        <div class="readonly-field" id="quantity-${idx}"></div>
+        <button class="mic-button" onclick="captureField('quantity', ${idx})"><i class="fas fa-microphone"></i></button>
+      </div>
+    </div>
+    <div class="mb-2">
+      <label class="fw-semibold">{{ t['rate']|default("Rate") }}:</label>
+      <div class="d-flex align-items-center">
+        <div class="readonly-field" id="rate-${idx}"></div>
+        <button class="mic-button" onclick="captureField('rate', ${idx})"><i class="fas fa-microphone"></i></button>
+      </div>
+    </div>
+  `;
+  document.getElementById('items-container').appendChild(box);
+}
+
+function submitExpense() {
+  expenseData.items = expenseData.items.filter(i => i.itemname && i.quantity && i.rate);
+
+  if (!expenseData.category || expenseData.items.length === 0) {
+    document.getElementById('status').innerText = '❌ Category and at least one valid item required';
+    return;
+  }
+
+  fetch('/voice_add_expense', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(expenseData)
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById('status').innerText = `✅ ${data.message}`;
+    const modal = new bootstrap.Modal(document.getElementById('postExpenseModal'));
+    modal.show();
+  })
+  .catch(() => {
+    document.getElementById('status').innerText = '❌ Submission failed';
+  });
+}
+
+function startNewExpense() {
+  expenseData = { category: '', items: [] };
+  document.getElementById('category').innerText = '';
+  document.getElementById('items-container').innerHTML = '';
+  document.getElementById('status').innerText = '';
+}
+</script>
+{% endblock %}

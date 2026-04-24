@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.bg-gradient-blue {
+    background: linear-gradient(90deg, #007bff, #00bfff);
+    color: white !important;
+}
+</style>
+
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <!-- ✅ Blue Gradient Header -->
+        <div class="bg-gradient-blue p-3 rounded-top">
+            <h4 class="mb-0 fw-bold text-center">👤 User Profile</h4>
+        </div>
+
+        <!-- ✅ Profile Content -->
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-3 text-center mb-3">
+                    <img src="{{ user.avatar(128) }}" class="img-thumbnail rounded-circle" alt="User Avatar">
+                    <h5 class="mt-2 text-muted">@{{ user.username }}</h5>
+                </div>
+                <div class="col-md-9">
+                    <h2 class="mb-3">{{ user.fullname or user.username }}</h2>
+
+                    {% if user.aboute_me %}
+                        <p><strong>About:</strong> <em>{{ user.aboute_me }}</em></p>
+                    {% endif %}
+                    {% if user.mobile %}
+                        <p><strong>📱 Mobile:</strong> {{ user.mobile }}</p>
+                    {% endif %}
+                    {% if user.email %}
+                        <p><strong>📧 Email:</strong> {{ user.email }}</p>
+                    {% endif %}
+                    {% if user.address %}
+                        <p><strong>🏠 Address:</strong> {{ user.address }}</p>
+                    {% endif %}
+                    {% if user.gst %}
+                        <p><strong>GSTIN:</strong> {{ user.gst }}</p>
+                    {% endif %}
+                    {% if user.last_seen %}
+                        <p class="text-muted"><strong>🕓 Last Seen:</strong> {{ user.last_seen }}</p>
+                    {% endif %}
+
+                    {% if current_user == user %}
+                        <a href="{{ url_for('main.edit_profile') }}" class="btn btn-primary mt-2">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

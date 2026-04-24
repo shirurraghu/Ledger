@@ -1,0 +1,19 @@
+{% for tx in transactions %}
+<div class="col-md-6 col-lg-4">
+    <div class="card shadow-sm border-0 mb-3">
+        <div class="card-body">
+            <h6 class="card-title mb-1 text-dark fw-bold">
+                {{ tx.type }} - {{ tx.party }}
+            </h6>
+            <p class="mb-1"><strong>{{ t['Date'] }}:</strong> {{ tx.date.strftime('%Y-%m-%d') }}</p>
+            <p class="mb-0 text-{{ 'success' if tx.amount > 0 else 'danger' }}">
+                <strong>{{ t['Amount'] }}:</strong> ₹{{ "%.2f"|format(tx.amount) }}
+            </p>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="col-12">
+    <div class="alert alert-warning text-center">{{ t['No transactions found.'] }}</div>
+</div>
+{% endfor %}

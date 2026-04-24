@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+  .bg-gradient-blue {
+    background: linear-gradient(90deg, #007bff, #00bfff);
+    color: white !important;
+  }
+  .readonly-field {
+    background-color: #f1f3f5;
+    padding: 10px 12px;
+    border-radius: 8px;
+    width: 100%;
+    min-height: 40px;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  .mic-button {
+    background: #6c757d;
+    border: none;
+    border-radius: 50%;
+    padding: 6px 10px;
+    margin-left: 10px;
+    color: white;
+    transition: background 0.3s;
+  }
+  .mic-button:hover {
+    background: #5a6268;
+  }
+  .mic-button.listening {
+    background-color: red !important;
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .item-box {
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+</style>
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center p-3 rounded shadow-sm bg-gradient-blue mb-4">
+    <h3 class="mb-0 text-white fw-bold">{{ t['voice_add_sale']|title }}</h3>
+  </div>
+
+  <div class="mb-4">
+    <label class="form-label fw-semibold">{{ t['customername']|title }}</label>
+    <div class="d-flex align-items-center">
+      <div class="readonly-field me-2" id="customername">❓</div>
+      <button class="mic-button" onclick="captureField('customername', this)">
+        <i class="fas fa-microphone"></i>
+      </button>
+    </div>
+  </div>
+
+  <div id="items-container"></div>
+
+  <button class="btn btn-outline-secondary w-100 mb-2" onclick="addNewItemBox()">➕ {{ t['add_item'] }}</button>
+  <button class="btn btn-success w-100 mb-3" onclick="submitSale()">✅ {{ t['submit'] }}</button>
+
+  <div id="status" class="text-center text-success fw-semibold mt-3"></div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="postSaleModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded shadow">
+        <div class="modal-header bg-gradient-blue text-white">
+          <h5 class="modal-title" id="modalLabel">{{ t['sale_added_success']|default('Sale Added Successfully!') }}</h5>
+        </div>
+        <div class="modal-body text-center">
+          {{ t['what_next']|default("What would you like to do next?") }}
+        </div>
+        <div class="modal-footer d-flex justify-content-between">
+          <button type="button" class="btn btn-dark w-50" onclick="startNewSale()" data-bs-dismiss="modal">➕ {{ t['add_sale'] }}</button>
+          <a href="{{ url_for('main.viewsale') }}" class="btn btn-outline-primary w-50">📋 {{ t['view_sales'] }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const langMap = {
+  en: 'en-IN', kn: 'kn-IN', hi: 'hi-IN', ta: 'ta-IN',
+  te: 'te-IN', ml: 'ml-IN', bn: 'bn-IN'
+};
+const currentLang = "{{ session['lang'] or 'en' }}";
+let saleData = { customername: '', items: [] };
+
+function captureField(field, btnEl, index = null) {
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = langMap[currentLang] || 'en-IN';
+  recognition.interimResults = false;
+
+  document.querySelectorAll('.mic-button').forEach(btn => btn.classList.remove('listening'));
+  btnEl.classList.add('listening');
+  document.getElementById('status').innerText = `🎤 Listening for ${field}...`;
+
+  recognition.start();
+
+  recognition.onresult = (event) => {
+    const text = event.results[0][0].transcript.trim();
+    if (field === 'customername') {
+      document.getElementById('customername').innerText = text;
+      saleData.customername = text;
+    } else {
+      document.getElementById(`${field}-${index}`).innerText = text;
+      saleData.items[index][field] = text;
+    }
+    document.getElementById('status').innerText = `✅ Captured ${field}`;
+    btnEl.classList.remove('listening');
+  };
+
+  recognition.onerror = (event) => {
+    document.getElementById('status').innerText = `❌ Error: ${event.error}`;
+    btnEl.classList.remove('listening');
+  };
+}
+
+function addNewItemBox() {
+  const idx = saleData.items.length;
+  saleData.items.push({ itemname: '', quantity: '', rate: '', tax_percent: '' });
+
+  const box = document.createElement('div');
+  box.className = 'item-box';
+  box.innerHTML = `
+    <div class="mb-2"><strong>{{ t['item'] }}:</strong>
+      <div class="d-flex align-items-center">
+        <div class="readonly-field me-2" id="itemname-${idx}">❓</div>
+        <button class="mic-button" onclick="captureField('itemname', this, ${idx})"><i class="fas fa-microphone"></i></button>
+      </div>
+    </div>
+    <div class="mb-2"><strong>{{ t['quantity'] }}:</strong>
+      <div class="d-flex align-items-center">
+        <div class="readonly-field me-2" id="quantity-${idx}">❓</div>
+        <button class="mic-button" onclick="captureField('quantity', this, ${idx})"><i class="fas fa-microphone"></i></button>
+      </div>
+    </div>
+    <div class="mb-2"><strong>{{ t['rate'] }}:</strong>
+      <div class="d-flex align-items-center">
+        <div class="readonly-field me-2" id="rate-${idx}">❓</div>
+        <button class="mic-button" onclick="captureField('rate', this, ${idx})"><i class="fas fa-microphone"></i></button>
+      </div>
+    </div>
+    <div class="mb-2"><strong>{{ t['tax_percent'] }}:</strong>
+      <div class="d-flex align-items-center">
+        <div class="readonly-field me-2" id="tax_percent-${idx}">❓</div>
+        <button class="mic-button" onclick="captureField('tax_percent', this, ${idx})"><i class="fas fa-microphone"></i></button>
+      </div>
+    </div>
+  `;
+  document.getElementById('items-container').appendChild(box);
+}
+
+function submitSale() {
+  saleData.items = saleData.items.filter(Boolean);
+  if (!saleData.customername || saleData.items.length === 0) {
+    document.getElementById('status').innerText = '❌ {{ t["customer_and_item_required"]|default("Customer name and items required") }}';
+    return;
+  }
+
+  fetch('/voice_add_sale', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(saleData)
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById('status').innerText = `✅ ${data.message}`;
+    new bootstrap.Modal(document.getElementById('postSaleModal')).show();
+  })
+  .catch(() => {
+    document.getElementById('status').innerText = '❌ {{ t["sale_submit_error"]|default("Error submitting sale.") }}';
+  });
+}
+
+function startNewSale() {
+  saleData = { customername: '', items: [] };
+  document.getElementById('customername').innerText = '❓';
+  document.getElementById('items-container').innerHTML = '';
+  document.getElementById('status').innerText = '';
+}
+</script>
+{% endblock %}

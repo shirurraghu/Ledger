@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+.bg-gradient-blue {
+  background: linear-gradient(90deg, #007bff, #00bfff);
+  color: white !important;
+}
+</style>
+
+<div class="container mt-4">
+  <!-- ✅ Gradient Header -->
+  <div class="d-flex justify-content-between align-items-center p-3 rounded shadow-sm bg-gradient-blue mb-4">
+    <h3 class="mb-0 text-white fw-bold">📄 {{ t["ALL_ESTIMATES"] }}</h3>
+
+    <a href="{{ url_for('main.voice_add_estimate_ui') }}" class="btn btn-light">
+    🎤 Voice
+  </a>
+  </div>
+
+  {% if estimates %}
+    <div class="row">
+      {% for estimate in estimates %}
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow-sm h-100 border-0 rounded-3">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <h5 class="card-title text-primary">#{{ estimate.estimate_number }}</h5>
+              <p><strong>{{ t["DATE"] }}:</strong> {{ estimate.date.strftime('%d-%m-%Y') }}</p>
+              <p><strong>{{ t["CUSTOMER"] }}:</strong> {{ estimate.customer.name }}</p>
+              <p><strong>{{ t["TOTAL"] }}:</strong> ₹{{ '%.2f'|format(estimate.total_amount) }}</p>
+              <span class="badge bg-{{ 'secondary' if estimate.status == 'Invoice' else 'info' }}">
+                {{ t[estimate.status.upper()] }}
+              </span>
+            </div>
+
+            <div class="d-grid gap-2 mt-3">
+              <a href="{{ url_for('main.download_estimate', estimate_id=estimate.id) }}"
+                 class="btn btn-sm btn-outline-primary">
+                📄 {{ t["DOWNLOAD_PDF"] }}
+              </a>
+
+              {% if estimate.status != 'Invoice' %}
+              <a href="{{ url_for('main.convert_estimate', estimate_id=estimate.id) }}"
+                 class="btn btn-sm btn-success">
+                🔁 {{ t["CONVERT_TO_INVOICE"] }}
+              </a>
+              {% else %}
+              <a href="{{ url_for('main.invoice_list') }}" class="btn btn-sm btn-dark">
+                📑 {{ t["VIEW_INVOICE"] }}
+              </a>
+              {% endif %}
+
+              <a href="{{ url_for('main.addsale_from_invoice', estimate_id=estimate.id) }}"
+                 class="btn btn-sm btn-outline-success">
+                💰 {{ t["CONVERT_TO_SALE"] }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-warning text-center mt-4">{{ t["NO_ESTIMATES_FOUND"] }}</div>
+  {% endif %}
+</div>
+{% endblock %}

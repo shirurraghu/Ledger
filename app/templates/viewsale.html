@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.bg-gradient-blue {
+    background: linear-gradient(90deg, #007bff, #00bfff);
+    color: white !important;
+}
+</style>
+
+<div class="container-fluid px-2 px-md-4 px-lg-5 pt-3 pt-md-4 pt-lg-5 pb-4 pb-md-5">
+
+    <!-- ✅ Blue Gradient Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded shadow-sm bg-gradient-blue">
+        <h3 class="fw-bold mb-0">{{ t['SALE LIST'] }}</h3>
+        <div class="d-flex gap-2 flex-wrap">
+            <input type="text" id="searchSale" class="form-control shadow-sm" placeholder="Search sale..." onkeyup="filterSales()">
+            <a href="{{ url_for('main.export_csv_sales') }}" class="btn btn-light shadow-sm">{{ t['Export'] }}</a>
+        </div>
+        <a href="{{ url_for('main.voice_add_sale_ui') }}" class="btn btn-light">
+    🎤 Voice
+  </a>
+    </div>
+
+    <!-- ✅ Sale Cards Display -->
+    <div class="row g-3" id="saleList">
+        {% for sale in view_sale %}
+        <div class="col-md-6 col-lg-4 mb-4 sale-card">
+            <div class="card shadow-sm rounded-3 border-0">
+                <div class="card-body d-flex flex-column" id="printInvoice_{{ sale.id }}">
+
+                    <h5 class="card-title text-dark fw-bold">
+                        <p><strong>{{ t['Customer'] }}:</strong> {{ sale.customer }}</p>
+                    </h5>
+                    <p><strong>{{ t['Invoice'] }} #</strong> {{ sale.id }}</p>
+                    <p><strong>{{ t['Date'] }}:</strong> {{ moment(sale.invoice_date).format('LLL') }}</p>
+
+                    <div class="mb-2">
+                        <label class="fw-bold">{{ t['Items'] }}:</label>
+                        <ul class="list-group list-group-flush">
+                            {% for item in sale.items %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>{{ item.item.itemname }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <p><strong>{{ t['Total'] }}:</strong> {{ sale.total_amount | currency }}</p>
+
+                    {% set has_payment = false %}
+                    {% for as in amount_status %}
+                        {% if as.sale_id == sale.id %}
+                            {% if not has_payment %}<hr>{% set has_payment = true %}{% endif %}
+                            <p>
+                                {{ t['Received Amount'] }}: ₹{{ as.amount | currency }}<br>
+                                {{ t['Payment Date'] }}: {{ moment(as.payment_date).format('LLL') }}<br>
+                                {{ t['Payment Mode'] }}: {{ as.payment_mode }}
+                            </p>
+                        {% endif %}
+                    {% endfor %}
+
+                    <p><strong>{{ t['Due Balance'] }}:</strong> {{ sale.balance_due | currency }}</p>
+                </div>
+
+                <!-- ✅ Buttons Section -->
+                <div class="px-3 py-2 bg-light rounded-bottom">
+                    <div class="d-flex flex-wrap gap-2 justify-content-start">
+                        <a href="{{ url_for('main.download_invoice', sale_id=sale.id) }}"
+                           class="btn btn-sm bg-white text-dark fw-semibold">
+                            {{ t['RECEIPT'] }}
+                        </a>
+                        <a href="{{ url_for('main.print_invoice', sale_id=sale.id) }}"
+                           class="btn btn-sm bg-white text-dark fw-semibold" target="_blank">
+                            {{ t['Print Invoice'] }}
+                        </a>
+                        <a href="{{ url_for('main.invoice_image', sale_id=sale.id) }}"
+                           class="btn btn-sm bg-white text-dark fw-semibold" download>
+                            {{ t['Download as Image'] }}
+                        </a>
+                        {% if sale.balance_due > 0 %}
+                        <a href="{{ url_for('main.receiveamount', id=sale.id) }}"
+                           class="btn btn-sm bg-white text-success fw-semibold">
+                            {{ t['RECEIVE AMOUNT'] }}
+                        </a>
+                        {% else %}
+                        <span class="btn btn-sm bg-white text-muted fw-semibold disabled">
+                            {{ t['FULLY PAID'] }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ✅ JS: Filter Sales -->
+<script>
+function filterSales() {
+    let input = document.getElementById('searchSale').value.toLowerCase();
+    let cards = document.querySelectorAll('.sale-card');
+    cards.forEach(card => {
+        let name = card.querySelector('.card-title').textContent.toLowerCase();
+        card.style.display = name.includes(input) ? "block" : "none";
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-2 px-md-4 px-lg-5 pt-3 pt-md-4 pt-lg-5 pb-4 pb-md-5">
+
+    <!-- ✅ Page Header with Blue Gradient -->
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded shadow-sm text-white"
+         style="background: linear-gradient(to right, #007bff, #00c6ff);">
+        <h3 class="mb-0">{{ t['VENDOR LIST'] }}</h3>
+        <div class="d-flex gap-2 flex-wrap mt-2">
+            <input type="text" id="searchVendor" class="form-control shadow-sm" placeholder="Search vendor..." onkeyup="filterVendors()">
+            <a href="{{ url_for('main.export_vendors_csv') }}" class="btn btn-light shadow-sm"> {{ t['Export'] }}</a>
+            <a href="{{ url_for('main.addvendor') }}" class="btn btn-light shadow-sm"> {{ t['Add Vendor'] }}</a>
+            <a href="{{ url_for('main.voice_add_vendor_ui') }}" class="btn btn-light">🎤 Voice</a>
+        </div>
+    </div>
+
+    {% if view_vendor %}
+    <!-- ✅ Responsive Vendor Cards -->
+    <div class="row" id="vendorList">
+        {% for vendor in view_vendor %}
+        <div class="col-md-6 col-lg-4 mb-4 vendor-card">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h5 class="card-title text-dark fw-bold vendor-name">{{ t['Name'] }} : {{ vendor.name }}</h5>
+                    <p class="mb-1 text-muted">{{ t['Mobile'] }}: <span class="vendor-mobile">{{ vendor.mobile }}</span></p>
+                    <p class="mb-1 text-muted">{{ t['GST'] }}#: <span class="vendor-gst">{{ vendor.gstin }}</span></p>
+                    <p class="mb-1 text-muted">{{ t['Address'] }}: <span class="vendor-address">{{ vendor.address }}</span></p>
+                    
+                    <!-- ✅ Action Buttons -->
+                    <div class="text-end mt-auto">
+                        <a href="{{ url_for('main.deletevendor', id=vendor.id) }}" class="btn btn-light btn-sm text-danger">
+                            <b>{{ t['Delete'] }}</b>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- ✅ Placeholder for Empty Vendor List -->
+    <div class="text-center text-muted">
+        <i class="fas fa-user-slash fa-3x"></i>
+        <p class="mt-3">No vendors found. Add a new vendor to get started.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- ✅ JavaScript for Live Search -->
+<script>
+function filterVendors() {
+    let input = document.getElementById('searchVendor').value.toLowerCase();
+    let cards = document.querySelectorAll('.vendor-card');
+
+    cards.forEach(card => {
+        let name = card.querySelector('.vendor-name').textContent.toLowerCase();
+        card.style.display = name.includes(input) ? "block" : "none";
+    });
+}
+</script>
+
+<!-- ✅ Custom CSS -->
+<style>
+    .vendor-card {
+        min-height: 250px;
+        transition: 0.3s ease-in-out;
+    }
+
+    .vendor-card:hover {
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    @media (max-width: 768px) {
+        .d-flex.gap-2 {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        #searchVendor {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

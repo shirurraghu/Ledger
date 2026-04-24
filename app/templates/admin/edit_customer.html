@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Edit Customer (Admin)</title>
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+  <style>
+    .gradient-header {
+      background: linear-gradient(90deg, #007bff, #00c6ff);
+      color: white;
+      padding: 1rem;
+      border-radius: 0.5rem 0.5rem 0 0;
+    }
+  </style>
+</head>
+<body class="p-4">
+
+  <!-- Blue Gradient Header -->
+  <div class="gradient-header mb-4">
+    <h3 class="mb-0">📝 Edit Customer - Admin Panel</h3>
+  </div>
+
+  <form method="POST">
+    <div class="mb-3">
+      <label>Name</label>
+      <input type="text" name="name" value="{{ customer.name }}" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label>Mobile</label>
+      <input type="text" name="mobile" value="{{ customer.mobile }}" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label>Address</label>
+      <input type="text" name="address" value="{{ customer.address }}" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-success">Update</button>
+    <a href="{{ url_for('main.admin_customers') }}" class="btn btn-secondary">Back</a>
+  </form>
+
+</body>
+</html>

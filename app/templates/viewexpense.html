@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid px-2 px-md-4 px-lg-5 pt-3 pt-md-4 pt-lg-5 pb-4 pb-md-5">
+
+    <!-- ✅ Page Header with Blue Gradient -->
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded shadow-sm text-white"
+         style="background: linear-gradient(to right, #007bff, #00c6ff);">
+        <h3 class="fw-bold mb-0">{{ t['EXPENSE LIST'] }}</h3>
+        <div class="d-flex gap-2 flex-wrap">
+            <input type="text" id="searchExpense" class="form-control shadow-sm" placeholder="Search expenses..." onkeyup="filterExpenses()">
+            <a href="{{ url_for('main.export_expenses_csv') }}" class="btn btn-light shadow-sm">{{ t['Export'] }}</a>
+            <a href="{{ url_for('main.addexpense') }}" class="btn btn-light">{{ t['Add Expense'] }}</a>
+            <a href="/voice_add_expense_ui" class="btn btn-light text-dark border shadow-sm">
+  🎤 VOICE EXPENSE
+</a>
+        </div>
+    </div>
+
+    <!-- ✅ Total Expense -->
+    <div class="card text-gray bg-gradient-info mb-4 shadow-sm rounded-3">
+        <div class="card-header text-center fw-bold">{{ t['Total Expense'] }}</div>
+        <div class="card-body text-center">
+            <h4><span class="badge bg-danger px-4 py-2">{{ total_expense | currency }}</span></h4>
+        </div>
+    </div>
+
+    <!-- ✅ Expense Cards -->
+    <div class="row">
+        {% for itms in expense %}
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+            <div class="card shadow-sm h-100 rounded-4 expense-card border-0 
+                {% if itms.amount > 1000 %} border-start border-5 border-danger 
+                {% elif itms.amount > 500 %} border-start border-5 border-warning 
+                {% else %} border-start border-5 border-success {% endif %}">
+                <div class="card-body">
+                    <h5 class="card-title mb-2 text-dark">{{ t['Name'] }} : {{ itms.itemname }}</h5>
+                    {% if itms.amount > 1000 %}
+                        <span class="badge bg-light mb-2">{{ t['High Expense'] }}</span>
+                    {% elif itms.amount > 500 %}
+                        <span class="badge bg-light text-dark mb-2">{{ t['Medium Expense'] }}</span>
+                    {% else %}
+                        <span class="badge bg-light mb-2">{{ t['Low Expense'] }}</span>
+                    {% endif %}
+
+                    <p class="mb-2">{{ t['Quantity'] }}: <strong>{{ itms.quantity }}</strong> | {{ t['Rate'] }}: <strong>{{ itms.rate }}</strong></p>
+                    <h6 class="text-secondary">{{ t['Total'] }}: <b>{{ itms.total_amount | currency }}</b></h6>
+
+                    <div class="text-end mt-3">
+                        <a href="{{ url_for('main.deleteexpense', id=itms.id) }}" class="btn btn-light btn-sm text-danger">
+                            <b>{{ t['Delete'] }}</b>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ✅ JavaScript -->
+<script>
+function filterExpenses() {
+    let input = document.getElementById("searchExpense").value.toLowerCase();
+    document.querySelectorAll(".expense-card").forEach(card => {
+        let title = card.querySelector(".card-title").textContent.toLowerCase();
+        card.style.display = title.includes(input) ? "block" : "none";
+    });
+}
+
+function exportToCSV() {
+    let csvContent = "data:text/csv;charset=utf-8,Item Name,Quantity,Rate,Total Amount\n";
+
+    document.querySelectorAll(".expense-card").forEach(card => {
+        let title = card.querySelector(".card-title");
+        let quantity = card.querySelector("p strong:first-child");
+        let rate = card.querySelector("p strong:last-child");
+        let total = card.querySelector("h6.text-secondary");
+
+        if (title && quantity && rate && total) {
+            let itemName = title.textContent.trim();
+            let qty = quantity.textContent.trim();
+            let rt = rate.textContent.trim();
+            let ttl = total.textContent.replace("Total: ₹", "").trim();
+            csvContent += `${itemName},${qty},${rt},${ttl}\n`;
+        }
+    });
+
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "expense_list.csv");
+    document.body.appendChild(link);
+    link.click();
+}
+</script>
+
+<!-- ✅ Mobile Friendly CSS -->
+<style>
+.card {
+    transition: all 0.3s ease-in-out;
+}
+
+@media (max-width: 768px) {
+    .d-flex.flex-wrap {
+        flex-direction: column;
+    }
+
+    .d-flex.gap-2 {
+        gap: 0.5rem;
+    }
+
+    #searchExpense {
+        width: 100%;
+    }
+}
+</style>
+
+{% endblock %}

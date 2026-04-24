@@ -1,0 +1,63 @@
+<div class="container mt-3">
+  <!-- Language Selector -->
+  <div class="d-flex justify-content-end mb-3">
+    <form method="get" action="{{ request.path }}">
+      <select name="lang" onchange="this.form.submit()" class="form-select form-select-sm w-auto">
+        <option value="en" {% if get_locale() == 'en' %}selected{% endif %}>English</option>
+        <option value="hi" {% if get_locale() == 'hi' %}selected{% endif %}>हिंदी</option>
+        <option value="kn" {% if get_locale() == 'kn' %}selected{% endif %}>ಕನ್ನಡ</option>
+        <option value="ta" {% if get_locale() == 'ta' %}selected{% endif %}>தமிழ்</option>
+        <option value="ml" {% if get_locale() == 'ml' %}selected{% endif %}>മലയാളം</option>
+        <option value="te" {% if get_locale() == 'te' %}selected{% endif %}>తెలుగు</option>
+        <option value="bn" {% if get_locale() == 'bn' %}selected{% endif %}>বাংলা</option>
+      </select>
+    </form>
+  </div>
+
+  <p>🌐 Current Locale: {{ get_locale() }}</p>
+
+  {% if get_locale() == 'hi' %}
+    {% set t = {
+      'total_sales': 'कुल बिक्री', 'total_expenses': 'कुल खर्च', 'total_purchases': 'कुल खरीद',
+      'stock_alerts': 'स्टॉक अलर्ट', 'recent_activity': 'हाल की गतिविधि', 'type': 'प्रकार',
+      'party': 'पार्टी', 'date': 'तारीख', 'amount': 'राशि', 'payment': 'भुगतान'
+    } %}
+  {% elif get_locale() == 'ta' %}
+    {% set t = {
+      'total_sales': 'மொத்த விற்பனை', 'total_expenses': 'மொத்த செலவுகள்', 'total_purchases': 'மொத்த வாங்கிகள்',
+      'stock_alerts': 'ஸ்டாக் எச்சரிக்கைகள்', 'recent_activity': 'சமீபத்திய செயல்பாடு', 'type': 'வகை',
+      'party': 'பார்டி', 'date': 'தேதி', 'amount': 'தொகை', 'payment': 'கட்டணம்'
+    } %}
+  {% elif get_locale() == 'te' %}
+    {% set t = {
+      'total_sales': 'మొత్తం అమ్మకాలు', 'total_expenses': 'మొత్తం ఖర్చులు', 'total_purchases': 'మొత్తం కొనుగోళ్లు',
+      'stock_alerts': 'స్టాక్ హెచ్చరికలు', 'recent_activity': 'ఇటీవలి క్రియలు', 'type': 'రకం',
+      'party': 'పార్టీ', 'date': 'తేదీ', 'amount': 'మొత్తం', 'payment': 'చెల్లింపు'
+    } %}
+  {% elif get_locale() == 'bn' %}
+    {% set t = {
+      'total_sales': 'মোট বিক্রি', 'total_expenses': 'মোট খরচ', 'total_purchases': 'মোট কেনাকাটা',
+      'stock_alerts': 'স্টক সতর্কতা', 'recent_activity': 'সাম্প্রতিক কার্যকলাপ', 'type': 'প্রকার',
+      'party': 'পক্ষ', 'date': 'তারিখ', 'amount': 'পরিমাণ', 'payment': 'পেমেন্ট'
+    } %}
+  {% elif get_locale() == 'ml' %}
+    {% set t = {
+      'total_sales': 'മൊത്തം വിൽപ്പന', 'total_expenses': 'മൊത്തം ചെലവുകൾ', 'total_purchases': 'മൊത്തം വാങ്ങലുകൾ',
+      'stock_alerts': 'സ്റ്റോക്ക് അലർട്ടുകൾ', 'recent_activity': 'സമീപകാല പ്രവർത്തനം', 'type': 'പ്രകാരമാണ്',
+      'party': 'പാർട്ടി', 'date': 'തീയതി', 'amount': 'തുക', 'payment': 'പണമടച്ചത്'
+    } %}
+  {% elif get_locale() == 'kn' %}
+    {% set t = {
+      'total_sales': 'ಒಟ್ಟು ಮಾರಾಟ', 'total_expenses': 'ಒಟ್ಟು ಖರ್ಚು', 'total_purchases': 'ಒಟ್ಟು ಖರೀದಿಗಳು',
+      'stock_alerts': 'ಸ್ಟಾಕ್ ಎಚ್ಚರಿಕೆಗಳು', 'recent_activity': 'ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ', 'type': 'ಪ್ರಕಾರ',
+      'party': 'ಪಕ್ಷ', 'date': 'ದಿನಾಂಕ', 'amount': 'ಮೊತ್ತ', 'payment': 'ಪಾವತಿ'
+    } %}
+  {% else %}
+    {% set t = {
+      'total_sales': 'Total Sales', 'total_expenses': 'Total Expenses', 'total_purchases': 'Total Purchases',
+      'stock_alerts': 'Stock Alerts', 'recent_activity': 'Recent Activity', 'type': 'Type',
+      'party': 'Party', 'date': 'Date', 'amount': 'Amount', 'payment': 'Payment'
+    } %}
+  {% endif %}
+</div>
+

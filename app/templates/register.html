@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% import "bootstrap_wtf.html" as wtf %}
+
+{% block content %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<style>
+.bg-gradient-blue {
+    background: linear-gradient(90deg, #007bff, #00bfff);
+    color: white !important;
+}
+</style>
+
+<div class="container mt-5">
+    <!-- ✅ Updated Header -->
+    <div class="bg-gradient-blue p-3 mb-4 rounded shadow-sm">
+        <h3 class="text-center mb-0 fw-bold">REGISTER</h3>
+    </div>
+
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.username.label(class="form-label") }}
+            {{ form.username(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.email.label(class="form-label") }}
+            {{ form.email(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.mobile.label(class="form-label") }}
+            {{ form.mobile(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.address.label(class="form-label") }}
+            {{ form.address(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.password.label(class="form-label") }}
+            {{ form.password(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.password2.label(class="form-label") }}
+            {{ form.password2(class="form-control") }}
+        </div>
+
+        <div class="form-group mt-4">
+            {{ form.submit(class="btn btn-success btn-block") }}
+        </div>
+    </form>
+</div>
+{% endblock %}

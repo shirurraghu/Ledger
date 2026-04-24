@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid px-2 px-md-4 px-lg-5 pt-3 pt-md-4 pt-lg-5 pb-4 pb-md-5">
+
+    <!-- ✅ Page Header with Search & Add -->
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded shadow-sm bg-warning">
+        <h3 class="text-dark fw-bold mb-0">{{ t['Trial Balance Report'] }}  {{ date_filter }}</h3>
+    </div>
+
+    <!-- ✅ Filter Form -->
+    <form method="get" action="{{ url_for('main.trial_balance_report') }}" class="mb-4 d-flex gap-2">
+        <input type="date" id="from_date" name="from_date" class="form-control" value="{{ request.args.get('from_date', '') }}">
+        <input type="date" id="to_date" name="to_date" class="form-control" value="{{ request.args.get('to_date', '') }}">
+        <button type="submit" class="btn btn-light">{{ t['Filter'] }}</button>
+        <a href="{{ url_for('main.export_trial_balance_csv', from_date=request.args.get('from_date', ''), to_date=request.args.get('to_date', '')) }}" class="btn btn-light">
+            {{ t['Export to CSV'] }}
+        </a>
+    </form>
+
+    <div class="container mt-3">
+        
+        <div class="row g-3">
+            {% for entry in trial_balance_data %}
+            <div class="col-md-4 col-12">
+                <div class="card bg-white text-dark shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ entry.account }}</h5>
+                        <p><strong>{{ t['Debit'] }} :</strong> ₹{{ "%.2f"|format(entry.debit) }}</p>
+                        <p><strong>{{ t['Credit'] }}:</strong> ₹{{ "%.2f"|format(entry.credit) }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <hr>
+        <h4 class="text-center">{{ t['Total Debits'] }} : ₹{{ "%.2f"|format(total_debits) }} | {{ t['Total Credits'] }} : ₹{{ "%.2f"|format(total_credits) }}</h4>
+    </div>
+
+</div>
+
+{% endblock %}
+
+<!-- ✅ CSS Enhancements -->
+<style>
+    /* ✅ Improve Card UI */
+    .card {
+        border-radius: 10px;
+        transition: transform 0.2s ease-in-out;
+    }
+    .card:hover {
+        transform: scale(1.03);
+    }
+
+    /* ✅ Improve Form Spacing */
+    form .form-control {
+        padding: 12px;
+        font-size: 1rem;
+    }
+
+    /* ✅ Improve Mobile View */
+    @media (max-width: 768px) {
+        .col-md-4.col-12 {
+            margin-bottom: 1rem;
+        }
+        .row.g-3 {
+            gap: 1rem;
+        }
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

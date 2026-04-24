@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- ✅ Include Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<!-- ✅ Custom Header Gradient Style -->
+<style>
+.bg-gradient-blue {
+    background: linear-gradient(90deg, #007bff, #00bfff);
+    color: white !important;
+}
+</style>
+
+<div class="container mt-4 form-bottom-padding">
+
+  <!-- ✅ Gradient Page Header -->
+  <div class="d-flex justify-content-between align-items-center p-3 rounded shadow-sm bg-gradient-blue mb-4">
+    <h3 class="mb-0 text-white fw-bold">🧾 {{ t["ADD_ESTIMATE"] }}</h3>
+    <button class="btn btn-light text-dark fw-semibold" data-bs-toggle="modal" data-bs-target="#addCustomerModal">
+      {{ t["ADD_CUSTOMER"] }}
+    </button>
+    <a href="{{ url_for('main.voice_add_estimate_ui') }}" class="btn btn-light">
+    🎤 VOICE ESTIMATE
+  </a>
+  </div>
+
+  <!-- ✅ Estimate Form -->
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body">
+      <form method="POST">
+        {{ form.csrf_token }}
+
+        <div class="mb-3">
+          <label class="form-label">{{ t["CUSTOMER"] }}</label>
+          <div class="input-group">
+            <select name="customer" id="customerSelect" class="form-select select2" required>
+              {% for c in customer_list %}
+                <option value="{{ c.id }}">{{ c.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label">{{ t["DATE"] }}</label>
+          {{ form.date(class="form-control") }}
+        </div>
+
+        <hr class="my-4">
+
+        <div id="items-container">
+          <!-- Default Row -->
+          <div class="row item-group g-3 mb-3">
+            <div class="col-md-3">
+              <label class="form-label">{{ t["ITEM"] }}</label>
+              <div class="input-group">
+                <select name="items-0-item" class="form-select select2 itemname" required>
+                  {% for item in item_list %}
+                    <option value="{{ item.id }}">{{ item.itemname }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">{{ t["QTY"] }}</label>
+              <input type="number" name="items-0-quantity" class="form-control qty" min="1" required>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">{{ t["RATE"] }}</label>
+              <input type="number" name="items-0-price" class="form-control rate" step="0.01" required>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">{{ t["TAX_PERCENT"] }}</label>
+              <input type="number" name="items-0-tax" class="form-control tax" step="0.01">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">{{ t["SUBTOTAL"] }}</label>
+              <input type="text" class="form-control subtotal" readonly>
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+              <button type="button" class="btn btn-outline-danger remove-item w-100">−</button>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" id="addItem" class="btn btn-outline-secondary w-100 my-3">
+          ➕ {{ t["ADD_ROW"] }}
+        </button>
+
+        <div class="text-end mb-3">
+          <h5 class="fw-bold">{{ t["TOTAL"] }}: ₹<span id="total">0.00</span></h5>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">✅ {{ t["SUBMIT_ESTIMATE"] }}</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ✅ Add Customer Modal -->
+  <div class="modal fade" id="addCustomerModal" tabindex="-1">
+    <div class="modal-dialog">
+      <form id="addCustomerForm">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">{{ t["ADD_CUSTOMER"] }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="text" name="name" placeholder="{{ t['NAME'] }}" class="form-control mb-2" required>
+            <input type="text" name="mobile" placeholder="{{ t['MOBILE'] }}" class="form-control mb-2">
+            <input type="text" name="address" placeholder="{{ t['ADDRESS'] }}" class="form-control">
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">{{ t["SAVE"] }}</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+let rowCount = 1;
+const itemOptions = `{{ item_list | tojson | safe }}`;
+
+$(function () {
+  $('.select2').select2();
+
+  function calculateTotal() {
+    let total = 0;
+    $('.item-group').each(function () {
+      const qty = parseFloat($(this).find('.qty').val()) || 0;
+      const rate = parseFloat($(this).find('.rate').val()) || 0;
+      const tax = parseFloat($(this).find('.tax').val()) || 0;
+      const subtotal = qty * rate;
+      const taxAmt = subtotal * (tax / 100);
+      const totalRow = subtotal + taxAmt;
+      $(this).find('.subtotal').val(totalRow.toFixed(2));
+      total += totalRow;
+    });
+    $('#total').text(total.toFixed(2));
+  }
+
+  $('#items-container').on('input', '.qty, .rate, .tax', calculateTotal);
+
+  $('#addItem').click(function () {
+    const row = `
+      <div class="row item-group mb-3">
+        <div class="col-md-3">
+          <label>{{ t["ITEM"] }}</label>
+          <div class="input-group">
+            <select name="items-${rowCount}-item" class="form-select select2 itemname" required>
+              ${JSON.parse(itemOptions).map(i => `<option value="${i.id}">${i.itemname}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="col-md-2"><label>{{ t["QTY"] }}</label><input type="number" name="items-${rowCount}-quantity" class="form-control qty" min="1" required></div>
+        <div class="col-md-2"><label>{{ t["RATE"] }}</label><input type="number" name="items-${rowCount}-price" class="form-control rate" step="0.01" required></div>
+        <div class="col-md-2"><label>{{ t["TAX_PERCENT"] }}</label><input type="number" name="items-${rowCount}-tax" class="form-control tax" step="0.01"></div>
+        <div class="col-md-2"><label>{{ t["SUBTOTAL"] }}</label><input type="text" class="form-control subtotal" readonly></div>
+        <div class="col-md-1 d-flex align-items-end"><button type="button" class="btn btn-outline-danger remove-item">−</button></div>
+      </div>`;
+    $('#items-container').append(row);
+    rowCount++;
+    $('.select2').select2();
+  });
+
+  $('#items-container').on('click', '.remove-item', function () {
+    $(this).closest('.item-group').remove();
+    calculateTotal();
+  });
+
+  $('#addCustomerForm').submit(function (e) {
+    e.preventDefault();
+    $.post('/addcustomerajax', $(this).serialize(), function (data) {
+      const newOption = new Option(data.name, data.id, false, true);
+      $('#customerSelect').append(newOption).trigger('change');
+      $('#addCustomerModal').modal('hide');
+      $('#addCustomerForm')[0].reset();
+    });
+  });
+});
+</script>
+{% endblock %}

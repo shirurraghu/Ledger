@@ -1,0 +1,82 @@
+2025-07-03 14:46:18,764 ERROR: Exception on /set_mode/voice [GET] [in /home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py:1744]
+Traceback (most recent call last):
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 2529, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask_cors/extension.py", line 194, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "/home/raghavendra/FINAL/Ledger/app/routes.py", line 6333, in set_mode
+    return redirect(url_for('main.dashboard'))
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/helpers.py", line 256, in url_for
+    return current_app.url_for(
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 2034, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 2023, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'main.dashboard'. Did you mean 'main.admin_dashboard' instead?
+2025-07-03 14:47:44,681 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-04 12:38:48,728 ERROR: Exception on /transactions_report [GET] [in /home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py:1744]
+Traceback (most recent call last):
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 2529, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask_cors/extension.py", line 194, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "/home/raghavendra/FINAL/Ledger/app/routes.py", line 3757, in transactions_report
+    all_transactions.sort(key=lambda x: x["date"], reverse=True)
+TypeError: can't compare datetime.datetime to datetime.date
+2025-07-04 18:15:24,847 ERROR: Exception on /transactions_report [GET] [in /home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py:1744]
+Traceback (most recent call last):
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 2529, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask_cors/extension.py", line 194, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "/home/raghavendra/FINAL/Ledger/app/routes.py", line 3757, in transactions_report
+    all_transactions.sort(key=lambda x: x["date"], reverse=True)
+TypeError: can't compare datetime.datetime to datetime.date
+2025-07-04 18:17:53,264 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-04 18:25:22,649 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-04 18:28:40,827 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-04 18:30:59,703 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-04 18:33:33,444 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-04 18:33:38,298 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-04 18:33:42,032 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-04 18:35:32,978 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-04 18:38:38,138 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-04 18:40:09,706 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2026-04-24 14:13:13,386 INFO: Ledger App startup [in /Users/raghu/Documents/Ledger/app/__init__.py:96]
+2026-04-24 14:13:39,599 INFO: Ledger App startup [in /Users/raghu/Documents/Ledger/app/__init__.py:96]
+2026-04-24 14:13:54,165 INFO: Ledger App startup [in /Users/raghu/Documents/Ledger/app/__init__.py:96]
+2026-04-24 14:14:14,007 INFO: Ledger App startup [in /Users/raghu/Documents/Ledger/app/__init__.py:96]
+2026-04-24 14:38:17,109 INFO: Ledger App startup [in /Users/raghu/Documents/Ledger/app/__init__.py:96]
+2026-04-24 14:41:02,120 INFO: Ledger App startup [in /Users/raghu/Documents/Ledger/app/__init__.py:96]
+2026-04-24 14:41:45,831 INFO: Ledger App startup [in /Users/raghu/Documents/Ledger/app/__init__.py:96]
+2026-04-24 14:42:03,837 INFO: Ledger App startup [in /Users/raghu/Documents/Ledger/app/__init__.py:96]
+2026-04-24 14:51:33,859 INFO: Ledger App startup [in /Users/raghu/Documents/Ledger/app/__init__.py:96]
+2026-04-24 14:52:01,934 INFO: Ledger App startup [in /Users/raghu/Documents/Ledger/app/__init__.py:96]
+2026-04-24 15:05:22,865 INFO: Ledger App startup [in /Users/raghu/Documents/Ledger/app/__init__.py:96]
+2026-04-24 15:06:49,716 INFO: Ledger App startup [in /Users/raghu/Documents/Ledger/app/__init__.py:96]
+2026-04-24 15:27:49,782 INFO: Ledger App startup [in /Users/raghu/Documents/Ledger/app/__init__.py:96]
+2026-04-24 15:28:05,123 INFO: Ledger App startup [in /Users/raghu/Documents/Ledger/app/__init__.py:96]

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t['CUSTOMER']|replace('_', ' ')|title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-md-4 pt-4 pt-md-5 pb-4 form-bottom-padding">
+
+  <!-- ✅ Header -->
+  <div class="custom-header">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch gap-3">
+      <div class="flex-grow-1">
+        <h2 class="mb-3 mb-md-0">{{ t['CUSTOMER']|replace('_', ' ')|title }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Card Form -->
+  <div class="card mt-4 shadow-sm border-0 rounded-4 mx-auto" style="max-width: 700px;">
+    <div class="card-body bg-white px-4 py-4">
+      <form method="post">
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3">
+          <label class="form-label">{{ t['Name']|replace('_', ' ')|title }}</label>
+          {{ form.name(class="form-control form-control-lg") }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">{{ t['Mobile']|replace('_', ' ')|title }}</label>
+          {{ form.mobile(class="form-control form-control-lg") }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">{{ t['Email']|replace('_', ' ')|title }}</label>
+          {{ form.email(class="form-control form-control-lg") }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">{{ t['GST']|replace('_', ' ') }} #</label>
+          {{ form.gst(class="form-control form-control-lg") }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">{{ t['PAN']|replace('_', ' ') }} #</label>
+          {{ form.pan(class="form-control form-control-lg") }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">{{ t['Address']|replace('_', ' ')|title }}</label>
+          {{ form.address(class="form-control form-control-lg") }}
+        </div>
+
+        <div class="d-grid mt-4">
+          {{ form.submit(class="custom-btn btn-lg") }}
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

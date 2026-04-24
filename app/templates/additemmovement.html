@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Select2 + Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+<style>
+    @media (max-width: 576px) {
+        .card {
+            margin: 10px;
+            border-radius: 1rem;
+        }
+        .form-label, .form-control, .select2-container .select2-selection--single {
+            font-size: 0.95rem;
+        }
+        .select2-container .select2-selection--single {
+            height: 38px;
+            padding: 5px 10px;
+        }
+    }
+</style>
+
+<div class="container-fluid px-3 px-md-4 pt-4 pt-md-5 pb-4 form-bottom-padding">
+
+  <!-- ✅ Header -->
+  <div class="custom-header mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch gap-3">
+      <div class="flex-grow-1">
+        <h2 class="mb-3 mb-md-0">{{ t['MOVE ITEMS']|replace('_', ' ')|title }}</h2>
+      </div>
+    </div>
+  </div>        <div class="card-body">
+            <form method="post">
+                {{ form.hidden_tag() }}
+                <div class="row g-3">
+                    <div class="col-12">
+                        {{ t['Item'] }}
+                        {{ form.item(class="form-control") }}
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        {{ t['Quantity'] }}
+                        {{ form.quantity(class="form-control") }}
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        {{ t['Movement Type'] }}
+                        {{ form.movement_type(class="form-control") }}
+                    </div>
+
+                    <div class="col-12">
+                        {{ t['From Location'] }}
+                        {{ form.from_location(class="form-control location-select", id="from_location") }}
+                    </div>
+
+                    <div class="col-12">
+                        {{ t['To Location'] }}
+                        {{ form.to_location(class="form-control location-select", id="to_location") }}
+                    </div>
+
+                    <div class="col-12">
+                        {{ form.submit(class="btn btn-primary w-100 py-2 fw-semibold") }}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for New Location -->
+<div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form id="locationForm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="locationModalLabel">{{ t['ADD_NEW_LOCATION'] }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" class="form-control" id="newLocationName" placeholder="{{ t['ENTER_NEW_LOCATION_NAME'] }}" required>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">✅ {{ t['ADD'] }}</button>
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ t['CANCEL'] }}</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    $(".location-select").select2({
+        tags: true,
+        placeholder: "{{ t['SELECT_OR_ADD_LOCATION'] }}",
+        allowClear: true,
+        width: '100%',
+        createTag: function (params) {
+            return {
+                id: params.term,
+                text: params.term,
+                newOption: true
+            };
+        }
+    });
+
+    $(".location-select").on("select2:select", function (e) {
+        const data = e.params.data;
+        if (data.newOption) {
+            $("#newLocationName").val(data.text);
+            $("#locationModal").data("targetSelect", $(this));
+            $("#locationModal").modal("show");
+        }
+    });
+
+    $("#locationForm").on("submit", function (e) {
+        e.preventDefault();
+        const newLoc = $("#newLocationName").val().trim();
+
+        $.ajax({
+            url: "/addlocationajax",
+            type: "POST",
+            data: { location_name: newLoc },
+            success: function (response) {
+                if (response.success) {
+                    const newOption = new Option(response.name, response.id, true, true);
+                    const select = $("#locationModal").data("targetSelect");
+                    select.append(newOption).trigger("change");
+                    $("#locationModal").modal("hide");
+                } else {
+                    alert(response.message || "{{ t['FAILED_TO_ADD_LOCATION'] }}");
+                }
+            },
+            error: function () {
+                alert("{{ t['ERROR_COMMUNICATING_WITH_SERVER'] }}");
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

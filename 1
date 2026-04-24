@@ -1,0 +1,167 @@
+from time import time
+from datetime import datetime, timezone
+#from typing import Optional
+import sqlalchemy as sa
+import sqlalchemy.orm as so
+from flask_sqlalchemy import SQLAlchemy
+from collections import defaultdict
+from datetime import datetime
+from app import db, login, app
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
+from hashlib import md5
+import jwt
+
+@login.user_loader
+def load_user(id):
+	return db.session.get(User, int(id))
+
+
+class User(UserMixin, db.Model):
+	__tablename__ = 'users'
+	id = sa.Column(sa.Integer, primary_key=True)
+	username = sa.Column(sa.String(120), index=True)
+	mobile = sa.Column(sa.Integer)
+	email = sa.Column(sa.String(120))
+	gst = sa.Column(sa.String(12))
+	pas = sa.Column(sa.String(12))
+	address = sa.Column(sa.String(120))
+	password_hash = sa.Column(sa.String(256))
+	aboute_me= sa.Column(sa.String(120))
+	last_seen = sa.Column(sa.DateTime, default=datetime.utcnow)
+
+	def __repr__(self):
+		return self.username
+	
+	def set_password(self, password):
+		self.password_hash = generate_password_hash(password)
+
+	def check_password(self, password):
+		return check_password_hash(self.password_hash, password)
+
+	def avatar(self, size):
+		digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+		return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
+
+	def get_reset_password_token(self, expires_in=600):
+		return jwt.encode({'reset_password': self.id, 'exp': time() + expires_in}, app.config['SECRET_KEY'], algorithm='HS256')
+
+	@staticmethod
+	def verify_reset_password_token(token):
+		try:
+			id = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])['reset_password']
+		except:
+			return
+		return db.session.get(User, id)
+
+
+
+class Customer(db.Model):
+	__tablename__ = 'customers'
+	id = sa.Column(sa.Integer, primary_key=True)
+	name = sa.Column(sa.String(120), index=True)
+	mobile = sa.Column(sa.Integer)
+	email =  sa.Column(sa.Integer)
+	gst = sa.Column(sa.String(12))
+	pan = sa.Column(sa.String(12))
+	address = sa.Column(sa.String(120))
+	
+	def __repr__(self):
+		return self.name
+
+class Vendor(db.Model):
+	__tablename__ = 'vendors'
+	id = sa.Column(sa.Integer, primary_key=True)
+	name = sa.Column(sa.String(120), index=True)
+	mobile = sa.Column(sa.Integer)
+	email =  sa.Column(sa.Integer)
+	gst = sa.Column(sa.String(12))
+	pan = sa.Column(sa.String(12))
+	address = sa.Column(sa.String(120))
+	
+	def __repr__(self):
+		return self.name
+
+
+class Items(db.Model):
+	__tablename__ = 'item'
+	id = sa.Column(sa.Integer, primary_key=True)
+	item_type = sa.Column(sa.String(40))
+	itemname = sa.Column(sa.String(120))
+	measuring_unit = sa.Column(sa.String(20))
+	created_date = sa.Column(sa.DateTime, default=datetime.utcnow)
+	description = sa.Column(sa.String(120))
+	category_id = sa.Column(sa.ForeignKey('categories.id'))
+	category = db.relationship('Category')
+	vendor_id = sa.Column(sa.ForeignKey('vendors.id'))
+	vendor = db.relationship('Vendor')
+	
+
+	def __repr__(self):
+		return self.itemname
+
+
+class Category(db.Model):
+	__tablename__ = 'categories'
+	id = sa.Column(sa.Integer, primary_key=True)
+	catname = sa.Column(sa.String(120))
+	description = sa.Column(sa.String(200))
+
+	
+	def __repr__(self):
+		return self.catname
+
+class Sale(db.Model):
+	__tablename__ = 'sales'
+	id = sa.Column(sa.Integer, primary_key=True)
+	customer_id = sa.Column(sa.ForeignKey('customers.id'))
+	customername = db.relationship('Customer')
+	invoice_number = sa.Column(db.Integer, autoincrement=True)
+	invoice_date = sa.Column(sa.DateTime, default=datetime.utcnow)
+	payment_terms = sa.Column(sa.Integer)
+	items_id = sa.Column(sa.ForeignKey('item.id'))
+	item_name = db.relationship('Items')
+	amount = sa.Column(sa.Integer)
+
+	def __repr__(self):
+		return self.invoice_number	
+
+class Purchase(db.Model):
+	__tablename__ = 'purchases'
+	id = sa.Column(sa.Integer, primary_key=True)
+	vendor_id = sa.Column(sa.ForeignKey('vendors.id'))
+	vendorname = db.relationship('Vendor')
+	purchase_number = sa.Column(db.Integer, autoincrement=True)
+	purchase_date = sa.Column(sa.DateTime, default=datetime.utcnow)
+	payment_terms = sa.Column(sa.Integer)
+	items_id = sa.Column(sa.ForeignKey('item.id'))
+	item_name = db.relationship('Items')
+	amount = sa.Column(sa.Integer)
+
+	def __repr__(self):
+		return self.purchase_number	
+
+
+class Godown(db.Model):
+	__tablename__ = 'godowns'
+	id = sa.Column(sa.Integer, primary_key=True)
+	locname = sa.Column(sa.String(120))
+	created_date = sa.Column(sa.DateTime, default=datetime.utcnow)
+	
+	def __repr__(self):
+		return self.locname
+
+class ItemMovement(db.Model):
+	__tablename__ = 'itemmovements'
+	movement_id = sa.Column(sa.Integer, primary_key=True)
+	item_id = sa.Column(sa.ForeignKey('item.id'))
+	move_items = db.relationship('Items')
+	quantity = sa.Column(sa.Integer)
+	from_location_id = sa.Column(sa.ForeignKey('godowns.id'))
+	to_location_id = sa.Column(sa.ForeignKey('godowns.id'))
+	from_location = db.relationship('Godown', foreign_keys=from_location_id)
+	to_location = db.relationship('Godown', foreign_keys=to_location_id)
+	movement_date = sa.Column(sa.DateTime, default=datetime.utcnow)
+
+	def __repr__(self):
+		return self.movement_ID

@@ -1,0 +1,109 @@
+2025-07-03 12:53:01,086 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 12:54:29,083 ERROR: Exception on /voice_add_estimate_ui [GET] [in /home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py:1744]
+Traceback (most recent call last):
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 2529, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask_cors/extension.py", line 194, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "/home/raghavendra/FINAL/Ledger/app/routes.py", line 6212, in voice_add_estimate_ui
+    return render_template("voice/voice_add_estimate.html")
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/templating.py", line 147, in render_template
+    return _render(app, template, context)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/templating.py", line 130, in _render
+    rv = template.render(context)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/raghavendra/FINAL/Ledger/app/templates/voice/voice_add_estimate.html", line 1, in top-level template code
+    {% extends 'base.html' %}
+  File "/home/raghavendra/FINAL/Ledger/app/templates/base.html", line 32, in top-level template code
+    {% block content %}{% endblock %}
+  File "/home/raghavendra/FINAL/Ledger/app/templates/voice/voice_add_estimate.html", line 32, in block 'content'
+    <a class="btn btn-outline-dark w-50 me-2" href="{{ url_for('main.estimates') }}">📄 View Estimates</a>
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 2034, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 2023, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'main.estimates'. Did you mean 'main.estimate_list' instead?
+2025-07-03 12:55:06,760 ERROR: Exception on /voice_add_estimate_ui [GET] [in /home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py:1744]
+Traceback (most recent call last):
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 2529, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask_cors/extension.py", line 194, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "/home/raghavendra/FINAL/Ledger/app/routes.py", line 6212, in voice_add_estimate_ui
+    return render_template("voice/voice_add_estimate.html")
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/templating.py", line 147, in render_template
+    return _render(app, template, context)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/templating.py", line 130, in _render
+    rv = template.render(context)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/raghavendra/FINAL/Ledger/app/templates/voice/voice_add_estimate.html", line 1, in top-level template code
+    {% extends 'base.html' %}
+  File "/home/raghavendra/FINAL/Ledger/app/templates/base.html", line 32, in top-level template code
+    {% block content %}{% endblock %}
+  File "/home/raghavendra/FINAL/Ledger/app/templates/voice/voice_add_estimate.html", line 32, in block 'content'
+    <a class="btn btn-outline-dark w-50 me-2" href="{{ url_for('main.estimates') }}">📄 View Estimates</a>
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 2034, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 2023, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'main.estimates'. Did you mean 'main.estimate_list' instead?
+2025-07-03 12:55:55,545 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 12:56:29,118 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 12:57:50,098 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:00:52,391 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:01:58,938 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:02:27,743 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:07:11,184 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:07:48,412 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:10:07,617 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:19:30,667 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:22:08,175 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:23:27,800 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:28:20,245 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:32:09,035 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:35:32,876 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:38:51,977 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:41:56,070 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:45:51,573 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:46:28,914 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:47:49,627 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:54:57,341 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:58:35,415 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 13:58:49,312 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 14:02:12,824 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 14:03:09,465 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 14:05:06,634 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 14:08:06,064 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 14:16:41,774 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 14:20:34,980 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 14:22:24,572 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 14:24:57,119 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 14:27:29,714 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 14:31:23,279 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 14:46:05,053 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]

@@ -1,0 +1,86 @@
+{% import "bootstrap_wtf.html" as wtf %}
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<div class="container mt-5">
+
+    <!-- ✅ Gradient Login Header -->
+    <div class="p-3 rounded shadow-sm mb-4 text-white" style="background: linear-gradient(to right, #007bff, #00c6ff);">
+        <h3 class="mb-0"><i class="fas fa-sign-in-alt me-2"></i>LOGIN</h3>
+    </div>
+
+    <!-- ✅ Login Form -->
+    <div class="card shadow-sm p-4 mb-4">
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            {{ wtf.quick_form(form) }}
+        </form>
+    </div>
+
+    <!-- ✅ Register and Password Reset -->
+    <div class="text-center mb-4">
+        <div class="bg-light p-3 rounded shadow-sm">
+            <h5>New User?</h5>
+            <a href="{{ url_for('main.register') }}" class="btn btn-secondary">Register</a>
+        </div>
+    </div>
+
+    <!-- ✅ Subscription Plans -->
+    <div class="card shadow-sm p-4">
+        <h4 class="text-center mb-4">Subscription Plans</h4>
+        <div class="row text-center">
+
+            <!-- Free Plan -->
+            <div class="col-md-4 mb-3">
+                <div class="card border-success h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-success">Free</h5>
+                        <p class="card-text">✓ Up to 1000 entries</p>
+                        <p class="card-text">✓ Sales, Purchases, Expenses</p>
+                        <button class="btn btn-outline-success" disabled>Free Plan</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Plan -->
+            <div class="col-md-4 mb-3">
+                <div class="card border-primary h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Monthly</h5>
+                        <p class="card-text">Unlimited entries</p>
+                        <p class="card-text">Rs. 150 / month</p>
+                        <button class="btn btn-primary" onclick="subscribe('monthly')">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Yearly Plan -->
+            <div class="col-md-4 mb-3">
+                <div class="card border-warning h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-warning">Yearly</h5>
+                        <p class="card-text">Unlimited entries</p>
+                        <p class="card-text">Rs. 1600 / year</p>
+                        <button class="btn btn-warning" onclick="subscribe('yearly')">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- ✅ JS for plan redirect -->
+<script>
+    function subscribe(plan) {
+        window.location.href = "/subscribe?plan=" + plan;
+    }
+</script>
+
+<!-- Optional FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+{% endblock %}

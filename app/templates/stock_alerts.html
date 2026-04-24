@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-2 px-md-4 px-lg-5 pt-3 pt-md-4 pt-lg-5 pb-4 pb-md-5">
+
+    <!-- ✅ Page Header with Blue Gradient -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 p-3 rounded shadow-sm text-white"
+         style="background: linear-gradient(to right, #007bff, #00c6ff);">
+        <h3 class="fw-bold mb-0">{{ t['ITEM STOCK SUMMARY'] }}</h3>
+        <div class="d-flex gap-2 flex-wrap align-items-center mt-3 mt-md-0">
+            <input type="text" id="searchItem" class="form-control shadow-sm" placeholder="{{ t['Search items...'] }}" onkeyup="filterItems()" style="min-width: 220px;">
+            <a href="{{ url_for('main.export_stock_alerts_csv') }}" class="btn btn-light shadow-sm">{{ t['Export'] }}</a>
+        </div>
+    </div>
+
+    <!-- ✅ Stock Cards -->
+    <div class="row" id="stockList">
+        {% for stock in stock_data %}
+        <div class="col-md-6 col-lg-4 mb-3 stock-item">
+            <div class="alert {{ 'alert-danger' if stock.threshold is not none and stock.remaining_stock <= stock.threshold else 'alert-light' }}">
+                <strong>{{ t['Name'] }}: {{ stock.item_name }}</strong><br>
+                {{ t['Stock'] }}: <b>{{ stock.remaining_stock }}</b>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ✅ Script -->
+<script>
+function filterItems() {
+    const input = document.getElementById("searchItem").value.toLowerCase();
+    const cards = document.querySelectorAll("#stockList .stock-item");
+
+    cards.forEach(card => {
+        const itemName = card.textContent.toLowerCase();
+        card.style.display = itemName.includes(input) ? "block" : "none";
+    });
+}
+
+function exportToCSV() {
+    const rows = [['Item Name', 'Remaining Stock', 'Threshold']];
+    {% for stock in stock_data %}
+        rows.push([
+            "{{ stock.item_name }}",
+            "{{ stock.remaining_stock }}",
+            "{{ stock.threshold if stock.threshold is not none else '' }}"
+        ]);
+    {% endfor %}
+
+    let csvContent = "data:text/csv;charset=utf-8," 
+        + rows.map(e => e.join(",")).join("\n");
+
+    const link = document.createElement("a");
+    link.setAttribute("href", csvContent);
+    link.setAttribute("download", "stock_summary.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
+{% endblock %}

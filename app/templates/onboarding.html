@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.bg-gradient-blue {
+    background: linear-gradient(90deg, #007bff, #00bfff);
+    color: white !important;
+}
+.onboarding-step {
+    transition: all 0.5s ease;
+}
+</style>
+
+<div class="container mt-5">
+    <div class="card shadow border-0">
+        <!-- ✅ Gradient Header -->
+        <div class="bg-gradient-blue p-3 rounded-top text-center">
+            <h4 class="mb-0 fw-bold">🚀 Business Onboarding</h4>
+        </div>
+
+        <div class="card-body p-4">
+            <form id="onboardingForm" method="POST">
+                <!-- Step 1 -->
+                <div class="onboarding-step" id="step1">
+                    <h5 class="mb-3">1️⃣ {{ t['Business Information'] or 'Business Information' }}</h5>
+                    <div class="mb-3">
+                        <label for="business_type" class="form-label">Select your business type</label>
+                        <select name="business_type" id="business_type" class="form-select" required>
+                            <option value="">-- Select --</option>
+                            {% for key in business_presets.keys() %}
+                                <option value="{{ key }}">{{ key.title() }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Next →</button>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="onboarding-step d-none" id="step2">
+                    <h5 class="mb-3">📦 Sample Items Preview</h5>
+                    <p class="text-muted">Here are some items we'll prefill for your business:</p>
+                    <ul class="list-group" id="itemPreviewList">
+                        <li class="list-group-item">Please select a business type first.</li>
+                    </ul>
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                        <button type="submit" class="btn btn-success">✅ Finish Setup</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ JS -->
+<script>
+const itemPresets = {{ business_presets | tojson | safe }};
+
+function nextStep() {
+    const type = document.getElementById('business_type').value;
+    const list = document.getElementById('itemPreviewList');
+    list.innerHTML = "";
+
+    if (!type || !itemPresets[type]) {
+        list.innerHTML = "<li class='list-group-item text-danger'>❌ Please go back and choose a valid business type.</li>";
+        return;
+    }
+
+    document.getElementById('step1').classList.add('d-none');
+    document.getElementById('step2').classList.remove('d-none');
+
+    itemPresets[type].forEach(item => {
+        const li = document.createElement("li");
+        li.className = "list-group-item";
+        li.textContent = `${item.itemname} (${item.category})`;
+        list.appendChild(li);
+    });
+}
+
+function prevStep() {
+    document.getElementById('step2').classList.add('d-none');
+    document.getElementById('step1').classList.remove('d-none');
+}
+</script>
+{% endblock %}

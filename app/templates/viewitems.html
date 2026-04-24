@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t['ITEM LIST']|replace('_', ' ')|title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-md-4 pt-4 pt-md-5 pb-4 form-bottom-padding">
+
+  <!-- ✅ Page Header -->
+  <div class="custom-header">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch gap-3">
+
+      <!-- 🔍 Search Input with Icon -->
+      <div class="flex-grow-1">
+        <h2 class="mb-3 mb-md-0">{{ t['ITEM LIST']|replace('_', ' ')|title }}</h2>
+        <div class="input-group shadow-sm">
+          <span class="input-group-text bg-white border-end-0">
+            <i class="fas fa-search text-muted"></i>
+          </span>
+          <input type="text" id="searchItem" class="form-control border-start-0"
+                 placeholder="{{ t['Search item']|replace('_', ' ')|title }}" onkeyup="filterItems()">
+        </div>
+      </div>
+
+      <!-- ✅ Buttons (Right) -->
+      <div class="d-flex flex-wrap gap-2 justify-content-end align-items-center">
+  <a href="{{ url_for('main.export_csv_items') }}" class="custom-btn">
+    {{ t['Export']|replace('_', ' ')|title }}
+  </a>
+  <a href="{{ url_for('main.additems') }}" class="custom-btn">
+    {{ t['add_item']|replace('_', ' ')|title }}
+  </a>
+
+  <a href="{{ url_for('main.voice_add_item_ui') }}" class="custom-btn text-white">
+    🎤 Voice
+  </a>
+</div>
+
+    </div>
+  </div>
+
+  <!-- ✅ Item Cards -->
+  {% if view_items %}
+  <div class="row mt-3" id="itemList">
+    {% for itms in view_items %}
+    <div class="col-md-6 col-lg-4 mb-4 item-card">
+      <div class="card custom-card h-100">
+        <div class="card-body">
+          <h5 class="card-title">{{ t['Name']|replace('_', ' ')|title }}: {{ itms.itemname }}</h5>
+          <p class="mb-1"><strong>{{ t['Item ID']|replace('_', ' ')|title }}:</strong> {{ itms.id }}</p>
+          <p class="mb-1"><strong>{{ t['Created Date']|replace('_', ' ')|title }}:</strong> {{ moment(itms.created_date).format('LLL') }}</p>
+          <p class="mb-1"><strong>{{ t['Category']|replace('_', ' ')|title }}:</strong> {{ itms.category }}</p>
+          <p class="mb-1"><strong>{{ t['Stock Quantity']|replace('_', ' ')|title }}:</strong> {{ itms.stock_quantity }}</p>
+          <p class="mb-1"><strong>{{ t['Purchased Price']|replace('_', ' ')|title }}:</strong> {{ itms.purchase_price }}</p>
+          <p class="mb-1"><strong>{{ t['Selling Price']|replace('_', ' ')|title }}:</strong> {{ itms.selling_price }}</p>
+          <div class="d-flex justify-content-end mt-3">
+            <a href="{{ url_for('main.deleteitems', id=itms.id) }}"
+               class="btn btn-sm btn-outline-danger"
+               onclick="return confirm('Are you sure you want to delete this item?');">
+              {{ t['Delete']|replace('_', ' ')|title }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <!-- ✅ No Items Fallback -->
+  <div class="text-center text-muted mt-5">
+    <p class="fs-5">{{ t['No items found. Add a new item to get started.'] }}</p>
+    <a href="{{ url_for('main.additems') }}" class="custom-btn mt-3">
+      {{ t['add_item']|replace('_', ' ')|title }}
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterItems() {
+  const input = document.getElementById('searchItem').value.toLowerCase();
+  const cards = document.querySelectorAll('.item-card');
+  cards.forEach(card => {
+    const name = card.querySelector('.card-title').textContent.toLowerCase();
+    card.style.display = name.includes(input) ? "block" : "none";
+  });
+}
+</script>
+{% endblock %}

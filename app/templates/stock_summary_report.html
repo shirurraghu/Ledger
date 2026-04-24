@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid px-2 px-md-4 px-lg-5 pt-3 pt-md-4 pt-lg-5 pb-4 pb-md-5">
+
+    <!-- ✅ Page Header with Search & Add -->
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded shadow-sm bg-warning">
+        <h3 class="text-dark fw-bold mb-0"> {{ t['Stock Summary Report'] }}  {{ date_filter }}</h3>
+    </div>
+
+<form method="get" action="{{ url_for('main.stock_summary_report') }}" class="mb-4 row g-2">
+    <div class="col-md-3 col-12">
+        <input type="date" name="from_date" class="form-control" value="{{ request.args.get('from_date', '') }}">
+    </div>
+    <div class="col-md-3 col-12">
+        <input type="date" name="to_date" class="form-control" value="{{ request.args.get('to_date', '') }}">
+    </div>
+    <div class="col-md-2 col-12 d-flex align-items-end">
+        <button type="submit" class="btn btn-light w-100">{{ t['Filter'] }}</button>
+    </div>
+    <div class="col-md-2 col-12 d-flex align-items-end">
+        <a href="{{ url_for('main.export_stock_summary_csv', from_date=request.args.get('from_date', ''), to_date=request.args.get('to_date', '')) }}" class="btn btn-light w-100">
+            {{ t['Export to CSV'] }}
+        </a>
+    </div>
+</form>
+
+<!-- ✅ Stock Summary Report in Cards -->
+<div class="container mt-3">
+    <div class="row g-3">
+        {% for stock in stock_summary %}
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-box"></i> {{ stock.Item }}</h5>
+                    <p><strong>{{ t['Opening Stock'] }} :</strong> {{ stock["Opening Stock"] }}</p>
+                    <p class="text-success"><strong>{{ t['Purchased'] }} :</strong> {{ stock["Purchased"] }}</p>
+                    <p class="text-danger"><strong>{{ t['Sold'] }} :</strong> {{ stock["Sold"] }}</p>
+                    <p class="text-primary"><strong>{{ t['Closing Stock'] }} :</strong> {{ stock["Closing Stock"] }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

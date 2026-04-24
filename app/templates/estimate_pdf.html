@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="{{ g.language_code or 'en' }}">
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: sans-serif; font-size: 14px; color: #333; }
+        h2 { text-align: center; margin-bottom: 10px; }
+        p { margin: 4px 0; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        th, td {
+            border: 1px solid #999;
+            padding: 6px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tfoot td {
+            font-weight: bold;
+        }
+
+        .right { text-align: right; }
+    </style>
+</head>
+<body>
+    <h2>{{ t["ESTIMATE_HEADING"] }}</h2>
+
+    <p><strong>{{ t["ESTIMATE_NO"] }}:</strong> {{ estimate.estimate_number }}</p>
+    <p><strong>{{ t["DATE"] }}:</strong> {{ estimate.date.strftime('%d-%m-%Y') }}</p>
+    <p><strong>{{ t["CUSTOMER"] }}:</strong> {{ estimate.customer.name }}</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>{{ t["ITEM"] }}</th>
+                <th>{{ t["QTY"] }}</th>
+                <th>{{ t["RATE"] }}</th>
+                <th>{{ t["SUBTOTAL"] }}</th>
+                <th>{{ t["TAX_PERCENT"] }}</th>
+                <th>{{ t["TAX_AMOUNT"] }}</th>
+                <th>{{ t["TOTAL"] }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set ns = namespace(total=0, total_tax=0) %}
+            {% for item in estimate.items %}
+                {% set tax_value = item.tax_value or 0 %}
+                {% set tax_percent = item.tax_percent or 0 %}
+                {% set item_total = item.subtotal + tax_value %}
+
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ item.item.itemname }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td class="right">{{ "%.2f"|format(item.price) }}</td>
+                    <td class="right">{{ "%.2f"|format(item.subtotal) }}</td>
+                    <td class="right">{{ "%.2f"|format(tax_percent) }}</td>
+                    <td class="right">{{ "%.2f"|format(tax_value) }}</td>
+                    <td class="right">{{ "%.2f"|format(item_total) }}</td>
+                </tr>
+
+                {% set ns.total = ns.total + (item.subtotal or 0) %}
+                {% set ns.total_tax = ns.total_tax + tax_value %}
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="7" class="right">{{ t["SUBTOTAL"] }}</td>
+                <td class="right">₹{{ "%.2f"|format(ns.total) }}</td>
+            </tr>
+            <tr>
+                <td colspan="7" class="right">{{ t["TOTAL_TAX"] }}</td>
+                <td class="right">₹{{ "%.2f"|format(ns.total_tax) }}</td>
+            </tr>
+            <tr>
+                <td colspan="7" class="right">{{ t["GRAND_TOTAL"] }}</td>
+                <td class="right">₹{{ "%.2f"|format(ns.total + ns.total_tax) }}</td>
+            </tr>
+        </tfoot>
+    </table>
+</body>
+</html>

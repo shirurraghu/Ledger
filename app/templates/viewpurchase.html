@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.bg-gradient-blue {
+    background: linear-gradient(90deg, #007bff, #00bfff);
+    color: white !important;
+}
+</style>
+
+<div class="container-fluid px-2 px-md-4 px-lg-5 pt-3 pt-md-4 pt-lg-5 pb-4 pb-md-5">
+
+    <!-- ✅ Blue Gradient Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded shadow-sm bg-gradient-blue">
+        <h3 class="fw-bold mb-0">{{ t['PURCHASE LIST'] }}</h3>
+        <div class="d-flex gap-2 flex-wrap">
+            <input type="text" id="purchaseSearch" class="form-control shadow-sm" placeholder="Search purchases...">
+            <a href="{{ url_for('main.export_purchases_csv') }}" class="btn btn-light shadow-sm">{{ t['Export'] }}</a>
+        </div>
+        <a href="{{ url_for('main.voice_add_purchase_ui') }}" class="btn btn-light">
+    🎤 Voice
+  </a>
+    </div>
+
+    <!-- ✅ Purchase Cards Display -->
+    <div class="row g-3" id="purchaseList">
+        {% for purchase in view_purchase %}
+        <div class="col-md-6 col-lg-4 mb-4 sale-card">
+            <div class="card shadow-sm rounded-3 border-0">
+                <div class="card-body d-flex flex-column">
+
+                    <h5 class="card-title text-dark fw-bold">
+                        <p><strong>{{ t['Vendor'] }}:</strong> {{ purchase.vendor.name }}</p>
+                    </h5>
+                    <p><strong>{{ t['Purchase'] }} #</strong> {{ purchase.id }}</p>
+                    <p><strong>{{ t['Date'] }}:</strong> {{ moment(purchase.purchase_date).format('LLL') }}</p>
+                    <p><strong>{{ t['Total'] }}:</strong> ₹{{ purchase.total_amount | currency }}</p>
+
+                    <div class="mb-2">
+                        <label class="fw-bold">{{ t['Items'] }}:</label>
+                        <ul class="list-group list-group-flush">
+                            {% for item in purchase.purchase_items %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>{{ item.item.itemname }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    {% set has_payment = false %}
+                    {% for ps in purchase_amount_status %}
+                        {% if ps.purchase_id == purchase.id %}
+                            {% if not has_payment %}<hr>{% set has_payment = true %}{% endif %}
+                            <p>
+                                {{ t['Paid Amount'] }} : ₹{{ ps.amount | currency }}<br>
+                                {{ t['Payment Date'] }}: {{ moment(ps.payment_date).format('LLL') }}<br>
+                                {{ t['Payment Mode'] }}: {{ ps.payment_mode }}
+                            </p>
+                        {% endif %}
+                    {% endfor %}
+
+                    <p><strong>{{ t['Due Balance'] }}:</strong> ₹{{ purchase.balance_due | currency }}</p>
+                </div>
+
+                <!-- ✅ Buttons -->
+                <div class="px-3 py-2 bg-light rounded-bottom">
+                    <div class="d-flex flex-wrap gap-2 justify-content-start">
+                        <a href="{{ url_for('main.download_purchase_invoice', purchase_id=purchase.id) }}"
+                           class="btn btn-sm bg-white text-dark fw-semibold">
+                            {{ t['RECEIPT'] }}
+                        </a>
+                        <a href="{{ url_for('main.print_purchase', purchase_id=purchase.id) }}"
+                           class="btn btn-sm bg-white text-dark fw-semibold" target="_blank">
+                            {{ t['Print Invoice'] }}
+                        </a>
+                        <a href="{{ url_for('main.purchase_invoice_image', purchase_id=purchase.id) }}"
+                           class="btn btn-sm bg-white text-dark fw-semibold" download>
+                            {{ t['Download as Image'] }}
+                        </a>
+                        {% if purchase.balance_due > 0 %}
+                        <a href="{{ url_for('main.receivepurchaseamount', id=purchase.id) }}"
+                           class="btn btn-sm bg-white text-success fw-semibold">
+                            {{ t['PAY DUE'] }}
+                        </a>
+                        {% else %}
+                        <span class="btn btn-sm bg-white text-muted fw-semibold disabled">
+                            {{ t['FULLY PAID'] }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ✅ JS: Live Search -->
+<script>
+document.getElementById('purchaseSearch').addEventListener('keyup', function () {
+    const term = this.value.toLowerCase();
+    document.querySelectorAll('#purchaseList .sale-card').forEach(function (card) {
+        const text = card.innerText.toLowerCase();
+        card.style.display = text.includes(term) ? '' : 'none';
+    });
+});
+</script>
+{% endblock %}

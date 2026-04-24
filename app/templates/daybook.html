@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-2 px-md-4 px-lg-5 pt-3 pt-md-4 pt-lg-5 pb-4 pb-md-5">
+
+    <!-- ✅ Page Header with Search & Export -->
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded shadow-sm bg-warning">
+        <h3 class="text-dark fw-bold mb-0">{{ t['Daybook Report'] }} - {{ date_filter }}</h3>
+        <form method="get" action="{{ url_for('main.daybook_report') }}" class="d-flex flex-wrap gap-2 justify-content-center mb-0">
+            <input type="date" name="date" value="{{ date_filter }}" class="form-control w-auto">
+            <button type="submit" class="btn btn-primary">{{ t['Filter'] }}</button>
+            <a href="{{ url_for('main.export_daybook_csv', date=date_filter) }}" class="btn btn-success">{{ t['Export CSV'] }}</a>
+        </form>
+    </div>
+
+    <!-- ✅ Sales Section -->
+    <div class="section-header my-4">📈 {{ t['Sales'] }}</div>
+    {% if sales %}
+        {% for sale in sales %}
+        <div class="card-daybook bg-light mb-3 p-3 rounded shadow-sm">
+            <div><strong>🧾 {{ t['Invoice'] }} #{{ sale.id }}</strong></div>
+            <div>👤 {{ t['Customer'] }}: <span class="text-dark fw-semibold">{{ sale.customer.name }}</span></div>
+            <div>💰 {{ t['Total'] }}: ₹{{ "%.2f"|format(sale.total_amount) }}</div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">{{ t['No sales found for this date.'] }}</p>
+    {% endif %}
+
+    <!-- ✅ Purchase Section -->
+    <div class="section-header my-4">📉 {{ t['Purchases'] }}</div>
+    {% if purchases %}
+        {% for purchase in purchases %}
+        <div class="card-daybook bg-white mb-3 p-3 rounded shadow-sm">
+            <div><strong>📦 {{ t['Purchase'] }} #{{ purchase.id }}</strong></div>
+            <div>🏢 {{ t['Vendor'] }}: <span class="text-dark fw-semibold">{{ purchase.Vendor.name }}</span></div>
+            <div>💸 {{ t['Total'] }}: ₹{{ "%.2f"|format(purchase.total_cost) }}</div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">{{ t['No purchases found for this date.'] }}</p>
+    {% endif %}
+
+    <!-- ✅ Expenses Section -->
+    <div class="section-header my-4">💸 {{ t['Expenses'] }}</div>
+    {% if expenses %}
+        {% for expense in expenses %}
+            {% for item in expense.expense_items %}
+            <div class="card-daybook bg-light mb-3 p-3 rounded shadow-sm">
+                <div><strong>🧾 {{ t['Category'] }}: {{ item.category_name or t['Other'] }}</strong></div>
+                <div>📝 {{ t['Notes'] }}: {{ expense.notes or t['None'] }}</div>
+                <div>💵 {{ t['Amount'] }}: ₹{{ "%.2f"|format(item.amount) }}</div>
+            </div>
+            {% endfor %}
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">{{ t['No expenses found for this date.'] }}</p>
+    {% endif %}
+
+    <!-- ✅ Summary Section -->
+    <div class="alert alert-info mt-4 rounded shadow-sm">
+        <h5 class="mb-3">📊 {{ t['Summary'] }}</h5>
+        <p><strong>{{ t['Total Sales'] }}:</strong> ₹{{ "%.2f"|format(total_sales) }}</p>
+        <p><strong>{{ t['Total Purchases'] }}:</strong> ₹{{ "%.2f"|format(total_purchases) }}</p>
+        <p><strong>{{ t['Total Expenses'] }}:</strong> ₹{{ "%.2f"|format(total_expenses) }}</p>
+        <p><strong>{{ t['Net Profit'] }}:</strong> ₹{{ "%.2f"|format(net_profit) }}</p>
+    </div>
+
+</div>
+{% endblock %}

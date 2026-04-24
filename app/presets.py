@@ -1,0 +1,85 @@
+BUSINESS_PRESETS = {
+    "grocery": [
+        {"itemname": "Rice", "category": "Grains"},
+        {"itemname": "Wheat Flour", "category": "Grains"},
+        {"itemname": "Sugar", "category": "Sweeteners"},
+        {"itemname": "Salt", "category": "Spices"},
+        {"itemname": "Cooking Oil", "category": "Oils"},
+    ],
+    "pharmacy": [
+        {"itemname": "Paracetamol", "category": "Tablets"},
+        {"itemname": "Cough Syrup", "category": "Syrups"},
+        {"itemname": "Bandages", "category": "First Aid"},
+        {"itemname": "Hand Sanitizer", "category": "Personal Care"},
+        {"itemname": "Vitamin D", "category": "Supplements"},
+    ],
+    "electronics": [
+        {"itemname": "USB Cable", "category": "Accessories"},
+        {"itemname": "Charger", "category": "Power"},
+        {"itemname": "Bluetooth Speaker", "category": "Audio"},
+        {"itemname": "LED Bulb", "category": "Lighting"},
+        {"itemname": "Power Bank", "category": "Batteries"},
+    ],
+    "hardware": [
+        {"itemname": "Nails", "category": "Fasteners"},
+        {"itemname": "Hammer", "category": "Tools"},
+        {"itemname": "Paint Brush", "category": "Painting"},
+        {"itemname": "Cement", "category": "Building Materials"},
+        {"itemname": "PVC Pipe", "category": "Plumbing"},
+    ],
+    "clothing": [
+        {"itemname": "Men T-Shirt", "category": "Men"},
+        {"itemname": "Women Kurti", "category": "Women"},
+        {"itemname": "Kids Jeans", "category": "Kids"},
+        {"itemname": "Socks", "category": "Accessories"},
+        {"itemname": "Caps", "category": "Accessories"},
+    ],
+    "stationery": [
+        {"itemname": "Notebook", "category": "Paper Products"},
+        {"itemname": "Pen", "category": "Writing Instruments"},
+        {"itemname": "Glue Stick", "category": "Adhesives"},
+        {"itemname": "Stapler", "category": "Office Supplies"},
+        {"itemname": "Marker", "category": "Writing Instruments"},
+    ],
+    "salon & beauty": [
+        {"itemname": "Shampoo", "category": "Hair Care"},
+        {"itemname": "Face Cream", "category": "Skin Care"},
+        {"itemname": "Nail Polish", "category": "Makeup"},
+        {"itemname": "Trimmer", "category": "Tools"},
+        {"itemname": "Hair Oil", "category": "Hair Care"},
+    ],
+    "mobile accessories": [
+        {"itemname": "Tempered Glass", "category": "Screen Protection"},
+        {"itemname": "Phone Cover", "category": "Covers"},
+        {"itemname": "Earphones", "category": "Audio"},
+        {"itemname": "Data Cable", "category": "Cables"},
+        {"itemname": "Wall Charger", "category": "Power"},
+    ],
+    "jewellery": [
+        {"itemname": "Gold Ring", "category": "Gold"},
+        {"itemname": "Silver Chain", "category": "Silver"},
+        {"itemname": "Earrings", "category": "Fashion"},
+        {"itemname": "Bangles", "category": "Traditional"},
+        {"itemname": "Pendant", "category": "Fashion"},
+    ],
+    "bakery": [
+        {"itemname": "Bread Loaf", "category": "Breads"},
+        {"itemname": "Bun", "category": "Breads"},
+        {"itemname": "Cake", "category": "Cakes"},
+        {"itemname": "Cookies", "category": "Snacks"},
+        {"itemname": "Donut", "category": "Snacks"},
+    ],
+    "restaurant": [
+        {"itemname": "Paneer", "category": "Dairy"},
+        {"itemname": "Basmati Rice", "category": "Grains"},
+        {"itemname": "Toor Dal", "category": "Pulses"},
+        {"itemname": "Cooking Oil", "category": "Oils"},
+        {"itemname": "Salt", "category": "Spices"},
+        {"itemname": "Red Chilli Powder", "category": "Spices"},
+        {"itemname": "Turmeric Powder", "category": "Spices"},
+        {"itemname": "Fresh Vegetables", "category": "Produce"},
+        {"itemname": "Soft Drinks", "category": "Beverages"},
+        {"itemname": "Ice Cream", "category": "Desserts"}
+]
+
+}

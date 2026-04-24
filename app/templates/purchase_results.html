@@ -1,0 +1,13 @@
+{% for purchase in purchases %}
+<div class="col-12 col-md-6 col-lg-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-receipt"></i> Invoice #{{ purchase.id }}</h5>
+            <p class="card-text"><strong>Vendor:</strong> {{ purchase.vendor.name }}</p>
+            <p class="card-text"><strong>Date:</strong> {{ purchase.invoice_date.strftime('%Y-%m-%d') }}</p>
+            <p class="card-text text-success"><strong>Total:</strong> ₹{{ "%.2f" | format(purchase.total_amount) }}</p>
+        </div>
+    </div>
+</div>
+{% endfor %}
+

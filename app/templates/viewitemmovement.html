@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid px-2 px-md-4 px-lg-5 pt-3 pt-md-4 pt-lg-5 pb-4 form-bottom-padding">
+
+  <!-- ✅ Page Header -->
+  <div class="custom-header mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+      <h2 class="mb-0 text-dark fw-bold">
+        {{ t['ITEM MOVEMENT']|replace('_', ' ')|title }}
+      </h2>
+
+      <div class="d-flex flex-column flex-sm-row gap-2 w-100 w-md-auto mt-3 mt-md-0">
+        <div class="input-group shadow-sm">
+          <span class="input-group-text bg-white border-end-0">
+            <i class="fas fa-search text-muted"></i>
+          </span>
+          <input type="text" id="searchItem" class="form-control border-start-0" placeholder="{{ t['Search items'] }}" onkeyup="filterItems()">
+        </div>
+        <a href="{{ url_for('main.additemmovement') }}" class="btn btn-light fw-semibold shadow-sm">
+          + {{ t['ADD MOVEMENT']|replace('_', ' ')|title }}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Item Movement Cards -->
+  <div class="row" id="itemList">
+    {% for itms in view_itemmovements %}
+    <div class="col-md-6 col-lg-4 mb-4 item-card">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <h5 class="card-title stock-item-name text-dark fw-semibold">
+            {{ t['Name'] }}: {{ itms.item }}
+          </h5>
+          <p class="mb-1"><strong>{{ t['Quantity'] }}:</strong> {{ itms.quantity }}</p>
+          <p class="mb-1"><strong>{{ t['Movement Type'] }}:</strong> {{ itms.movement_type }}</p>
+          <p class="text-muted"><strong>{{ t['Moved Date'] }}:</strong> {{ moment(itms.movement_date).format('LLL') }}</p>
+
+          <div class="text-end mt-auto">
+            <a href="{{ url_for('main.deleteitemmovement', movement_id=itms.movement_id) }}"
+               class="btn btn-sm btn-outline-danger"
+               onclick="return confirm('Are you sure you want to delete this movement?');">
+              <b>{{ t['Delete'] }}</b>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ✅ Live Search Script -->
+<script>
+function filterItems() {
+  const input = document.getElementById('searchItem').value.toLowerCase();
+  const cards = document.querySelectorAll('.item-card');
+  cards.forEach(card => {
+    const name = card.querySelector('.stock-item-name').textContent.toLowerCase();
+    card.style.display = name.includes(input) ? "block" : "none";
+  });
+}
+</script>
+
+<!-- ✅ Card Styling -->
+<style>
+.card {
+  min-height: 200px;
+  transition: box-shadow 0.3s ease-in-out;
+}
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+@media (max-width: 768px) {
+  .input-group {
+    width: 100%;
+  }
+}
+</style>
+
+{% endblock %}

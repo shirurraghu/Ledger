@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-3 px-md-4 pt-4 pt-md-5 pb-4">
+    <!-- ✅ Header with Blue Gradient -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 p-3 rounded shadow-sm text-white"
+         style="background: linear-gradient(to right, #007bff, #00c6ff);">
+        <h3 class="fw-bold mb-2 mb-md-0">{{ t['customer_list'] }}</h3>
+        <div class="d-flex flex-wrap gap-2 w-100 w-md-auto">
+            <input type="text" id="searchCustomer" class="form-control shadow-sm" placeholder="Search..." onkeyup="filterCustomers()">
+            <a href="{{ url_for('main.export_customers_csv') }}" class="btn btn-light shadow-sm">{{ t['export'] }}</a>
+            <a href="{{ url_for('main.addcustomer') }}" class="btn btn-light">{{ t['add_customer'] }}</a>
+            <a href="{{ url_for('main.voice_add_customer_ui') }}" class="btn btn-light">
+    🎤 Voice
+  </a>
+        </div>
+    </div>
+
+    {% if view_customer %}
+    <!-- ✅ Customer Cards -->
+    <div class="row" id="customerList">
+        {% for itms in view_customer %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div>
+                        <h5 class="card-title text-dark fw-bold">{{ t['Name'] }} : {{ itms.name }}</h5>
+                        <p class="mb-1">{{ t['mobile'] }} : <span>{{ itms.mobile }}</span></p>
+                        <p class="mb-2">{{ t['address'] }} : <span>{{ itms.address }}</span></p>
+                    </div>
+                    <div class="d-flex justify-content-end mt-3">
+                        <a href="{{ url_for('main.deletecustomer', id=itms.id) }}" class="btn btn-light btn-sm text-danger">
+                            <b>{{ t['delete'] }}</b>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- ✅ Empty State -->
+    <div class="text-center text-muted">
+        <i class="fas fa-user-slash fa-3x"></i>
+        <p class="mt-3">{{ t['no_customers'] }}</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- ✅ Scripts -->
+<script>
+function filterCustomers() {
+    let input = document.getElementById('searchCustomer').value.toLowerCase();
+    let cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+        let name = card.querySelector('.card-title').textContent.toLowerCase();
+        card.style.display = name.includes(input) ? "block" : "none";
+    });
+}
+
+function exportToCSV() {
+    let rows = [["{{ t['name'] }}", "{{ t['mobile'] }}", "{{ t['email'] }}", "{{ t['gst'] }}", "{{ t['pan'] }}", "{{ t['address'] }}"]];
+    document.querySelectorAll('.card').forEach(card => {
+        let row = [
+            card.querySelector('.card-title').textContent.trim(),
+            ...Array.from(card.querySelectorAll('p span')).map(el => el.textContent.trim())
+        ];
+        rows.push(row);
+    });
+
+    let csvContent = "data:text/csv;charset=utf-8," + rows.map(row => row.join(",")).join("\n");
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.href = encodedUri;
+    link.download = "customers.csv";
+    document.body.appendChild(link);
+    link.click();
+}
+</script>
+{% endblock %}

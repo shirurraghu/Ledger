@@ -1,0 +1,16 @@
+{% for sale in sales %}
+<div class="col-12 col-md-6 col-lg-4">
+    <div class="card custom-sales-card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between mb-2">
+                <h5 class="mb-0">
+                    <i class="fas fa-file-invoice-dollar me-2 text-primary"></i>{{ t['Invoice'] }} #{{ sale.id }}
+                </h5>
+            </div>
+            <p class="mb-1"><i class="fas fa-user me-2 text-muted"></i><strong>{{ t['Customer'] }}:</strong> {{ sale.customer.name }}</p>
+            <p class="mb-1"><i class="fas fa-calendar-alt me-2 text-muted"></i><strong>{{ t['Date'] }}:</strong> {{ sale.invoice_date.strftime('%Y-%m-%d') }}</p>
+            <p class="mb-0 text-success fw-semibold"><i class="fas fa-rupee-sign me-2"></i>{{ t['Total'] }}: ₹{{ "%.2f"|format(sale.total_amount) }}</p>
+        </div>
+    </div>
+</div>
+{% endfor %}

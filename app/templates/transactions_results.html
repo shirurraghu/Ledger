@@ -1,0 +1,26 @@
+{% for transaction in sales + purchases + payments_in + payments_out + expenses %}
+<div class="col-md-6 col-lg-4 mt-3">
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body">
+            <h5 class="card-title text-primary">{{ transaction.type }}</h5>
+            <p>
+                <strong>Party:</strong>
+                {{ transaction.party if transaction.type != 'Expense' else transaction.category_name }}
+            </p>
+            <p><strong>Date:</strong> <span class="badge bg-info text-dark">{{ transaction.date.strftime('%Y-%m-%d') }}</span></p>
+            <p>
+                <strong>Amount:</strong>
+                <span class="fw-bold {{ 'text-success' if transaction.amount > 0 else 'text-danger' }}">
+                    ₹{{ '%.2f' | format(transaction.amount) }}
+                </span>
+            </p>
+        </div>
+    </div>
+</div>
+{% else %}
+    <div class="col-12">
+        <div class="alert alert-warning text-center">
+            No transactions found for the selected filters.
+        </div>
+    </div>
+{% endfor %}

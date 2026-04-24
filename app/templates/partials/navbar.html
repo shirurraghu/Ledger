@@ -1,0 +1,185 @@
+<style>
+  .custom-navbar {
+    background-color: #343a40;
+    z-index: 1050;
+  }
+
+  .navbar .badge {
+    font-size: 0.7rem;
+    padding: 3px 6px;
+  }
+
+  @media (max-width: 768px) {
+    .navbar-nav .nav-link,
+    .btn,
+    .form-select {
+      font-size: 0.875rem;
+    }
+
+    .navbar .dropdown-menu {
+      font-size: 0.85rem;
+    }
+
+    .navbar img {
+      filter: brightness(0) invert(1);
+    }
+  }
+</style>
+
+<!-- 🔹 Fixed Top Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark custom-navbar shadow-sm fixed-top">
+  <div class="container-fluid">
+
+    <!-- 🔹 Brand -->
+    <a class="navbar-brand" href="/">
+      <strong style="color: white;">Billbook</strong>
+    </a>
+
+    <!-- 🔹 Navbar Toggler -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- 🔹 Navbar Content -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+
+      <!-- 🔹 Left Navigation -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="/index">{{ t['Home'] }}</a></li>
+        <li class="nav-item"><a class="nav-link" href="/viewitems">{{ t['Items'] }}</a></li>
+
+        <!-- 🔸 Reports Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="reportsDropdown" role="button" data-bs-toggle="dropdown">
+            {{ t['Reports'] }}
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="reportsDropdown">
+            <li><a class="dropdown-item" href="/daybook">{{ t['Daybook'] }}</a></li>
+            <li><a class="dropdown-item" href="/purchase_report">{{ t['Purchase Report'] }}</a></li>
+            <li><a class="dropdown-item" href="/sales_report">{{ t['Sales Report'] }}</a></li>
+            <li><a class="dropdown-item" href="/transactions_report">{{ t['Transactions Report'] }}</a></li>
+            <li><a class="dropdown-item" href="/profit_loss_report">{{ t['Profit & Loss'] }}</a></li>
+            <li><a class="dropdown-item" href="/cash_flow_report">{{ t['Cash Flow'] }}</a></li>
+            <li><a class="dropdown-item" href="/balance_sheet">{{ t['Balance Sheet'] }}</a></li>
+            <li><a class="dropdown-item" href="/trial_balance_report">{{ t['Trial Balance'] }}</a></li>
+            <li><a class="dropdown-item" href="/vendor_report">{{ t['Vendor Report'] }}</a></li>
+            <li><a class="dropdown-item" href="/customer_report">{{ t['Customer Report'] }}</a></li>
+            <li><a class="dropdown-item" href="/stock_summary_report">{{ t['Stock Summary'] }}</a></li>
+            <li><a class="dropdown-item" href="/item_wise_profit_loss">{{ t['Item-wise Profit & Loss'] }}</a></li>
+            <li><a class="dropdown-item" href="/gstr1_report">{{ t['GSTR1'] }}</a></li>
+            <li><a class="dropdown-item" href="/gstr2_report">{{ t['GSTR2'] }}</a></li>
+            <li><a class="dropdown-item" href="/gstr3b_report">{{ t['GSTR3B'] }}</a></li>
+          </ul>
+        </li>
+
+        <!-- 🔸 Menu Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown">
+            {{ t['Menu'] }}
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+            <li><a class="dropdown-item" href="/category">{{ t['Item Category'] }}</a></li>
+            <li><a class="dropdown-item" href="/viewexpcategory">{{ t['Expense Category'] }}</a></li>
+            <li><a class="dropdown-item" href="/viewlocation">{{ t['Godown'] }}</a></li>
+            <li><a class="dropdown-item" href="/viewcustomer">{{ t['Customers'] }}</a></li>
+            <li><a class="dropdown-item" href="/viewvendor">{{ t['Vendors'] }}</a></li>
+            <li><a class="dropdown-item" href="/viewitemmovement">{{ t['Item Movement'] }}</a></li>
+            <li><a class="dropdown-item" href="/viewsale">{{ t['Sales'] }}</a></li>
+            <li><a class="dropdown-item" href="/viewpurchase">{{ t['Purchases'] }}</a></li>
+            <li><a class="dropdown-item" href="/stock_alerts">{{ t['Inventory'] }}</a></li>
+            <li><a class="dropdown-item" href="/viewexpense">{{ t['Expense'] }}</a></li>
+            <li><a class="dropdown-item" href="/estimates">{{ t['ESTIMATE'] }}</a></li>
+            <li><a class="dropdown-item" href="/invoices">{{ t['Invoice'] }}</a></li>
+          </ul>
+        </li>
+
+        <!-- 🔸 Policies Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="policyDropdown" role="button" data-bs-toggle="dropdown">
+            Policies
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="policyDropdown">
+            <li><a class="dropdown-item" href="/terms_and_conditions">Terms and Conditions</a></li>
+            <li><a class="dropdown-item" href="/contact">Contact Us</a></li>
+            <li><a class="dropdown-item" href="/cancellation_refund_policy">Cancellation Refund Policy</a></li>
+            <li><a class="dropdown-item" href="/privacy_policy">Privacy Policy</a></li>
+            <li><a class="dropdown-item" href="/shipping_delivery">Shipping and Delivery Policy</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <!-- 🔹 Right-Aligned Navbar Elements -->
+      <ul class="navbar-nav ms-auto align-items-center">
+
+        <!-- 🔔 Notification Dropdown -->
+        <li class="nav-item dropdown me-3">
+          <a class="nav-link dropdown-toggle position-relative" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown">
+            <i class="fas fa-bell"></i>
+            {% if g.stock_notif_count > 0 %}
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {{ g.stock_notif_count }}
+              </span>
+            {% endif %}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="notifDropdown">
+            <li><h6 class="dropdown-header text-danger">{{ t['Low Stock Alerts'] }}</h6></li>
+            {% for notif in g.stock_notifications %}
+              <li>
+                <a class="dropdown-item d-flex justify-content-between align-items-center" href="#">
+                  <div>
+                    <strong>{{ notif.itemname }}</strong><br>
+                    <small class="text-muted">{{ notif.message }}</small>
+                  </div>
+                  <small class="text-muted ms-2">{{ notif.time }}</small>
+                </a>
+              </li>
+            {% else %}
+              <li><span class="dropdown-item text-muted">{{ t['No alerts'] }}</span></li>
+            {% endfor %}
+          </ul>
+        </li>
+
+        <!-- 🌐 Language Selector -->
+        <li class="nav-item me-3">
+          <form method="get" action="{{ request.path }}">
+            <select name="lang" onchange="this.form.submit()" class="form-select form-select-sm rounded-pill shadow-sm w-auto">
+              <option value="en" {% if get_locale() == 'en' %}selected{% endif %}>English</option>
+              <option value="hi" {% if get_locale() == 'hi' %}selected{% endif %}>हिंदी</option>
+              <option value="kn" {% if get_locale() == 'kn' %}selected{% endif %}>ಕನ್ನಡ</option>
+              <option value="ta" {% if get_locale() == 'ta' %}selected{% endif %}>தமிழ்</option>
+              <option value="ml" {% if get_locale() == 'ml' %}selected{% endif %}>മലയാളം</option>
+              <option value="te" {% if get_locale() == 'te' %}selected{% endif %}>తెలుగు</option>
+              <option value="bn" {% if get_locale() == 'bn' %}selected{% endif %}>বাংলা</option>
+            </select>
+          </form>
+        </li>
+
+        <!-- ⚙️ Admin Panel (if admin) -->
+        {% if current_user.is_authenticated and current_user.is_admin %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('main.admin_dashboard') }}">⚙️ Admin Panel</a>
+        </li>
+        {% endif %}
+
+        <!-- 👤 User Dropdown -->
+        {% if current_user.is_authenticated %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+            <i class="fas fa-user-circle"></i> {{ current_user.username }}
+            {% if subscription_status %}
+              <span class="badge {% if subscription_status == 'Active' %}bg-success{% else %}bg-danger{% endif %} ms-2">
+                {{ subscription_status }}
+              </span>
+            {% endif %}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li><a class="dropdown-item" href="{{ url_for('main.user', username=current_user.username) }}"><i class="fas fa-user"></i> {{ t['Profile'] }}</a></li>
+            <li><a class="dropdown-item text-danger" href="{{ url_for('main.logout') }}"><i class="fas fa-sign-out-alt"></i> {{ t['Logout'] }}</a></li>
+          </ul>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

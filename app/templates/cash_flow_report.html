@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid px-2 px-md-4 px-lg-5 pt-3 pt-md-4 pt-lg-5 pb-4 pb-md-5">
+
+    <!-- ✅ Page Header with Search & Add -->
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded shadow-sm bg-warning">
+        <h3 class="text-dark fw-bold mb-0">{{ t['Cashflow Report'] }} - {{ date_filter }}</h3>
+    </div>
+<!-- ✅ Filter Section -->
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h5 class="card-title text-primary">{{ t['Filter Cash Flow'] }}</h5>
+            <form method="get" action="{{ url_for('main.cash_flow_report') }}" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">{{ t['From Date'] }}</label>
+                    <input type="date" id="from_date" name="from_date" class="form-control" value="{{ request.args.get('from_date', '') }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">{{ t['To Date'] }}</label>
+                    <input type="date" id="to_date" name="to_date" class="form-control" value="{{ request.args.get('to_date', '') }}">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100"> {{ t['Filter'] }}</button>
+                </div>
+            </form>
+        <a href="{{ url_for('main.export_cash_flow_csv', from_date=request.args.get('from_date', ''), to_date=request.args.get('to_date', '')) }}" 
+   class="btn btn-success">
+   {{ t['Export to CSV'] }}
+</a>
+
+
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Cash Flow Summary Cards -->
+<div class="container mt-4">
+    <div class="row g-3">
+
+        <!-- ✅ Cash Inflows -->
+        <div class="col-md-4">
+            <div class="card shadow border-success">
+                <div class="card-body text-success">
+                    <h5 class="card-title"> {{ t['Cash Inflows'] }}</h5>
+                    <p class="card-text fs-4 fw-bold">₹{{ "%.2f"|format(total_inflows) }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ Sales Received -->
+        <div class="col-md-4">
+            <div class="card shadow border-primary">
+                <div class="card-body text-primary">
+                    <h5 class="card-title">{{ t['Sales Revenue'] }}</h5>
+                    <p class="card-text fs-4 fw-bold">₹{{ "%.2f"|format(sales_inflows) }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ Cash Outflows -->
+        <div class="col-md-4">
+            <div class="card shadow border-danger">
+                <div class="card-body text-danger">
+                    <h5 class="card-title"> {{ t['Cash Outflows'] }}</h5>
+                    <p class="card-text fs-4 fw-bold">₹{{ "%.2f"|format(total_outflows) }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ Payments to Vendors -->
+        <div class="col-md-4">
+            <div class="card shadow border-warning">
+                <div class="card-body text-warning">
+                    <h5 class="card-title"> {{ t['Vendor Payments'] }}</h5>
+                    <p class="card-text fs-4 fw-bold">₹{{ "%.2f"|format(vendor_payments) }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ Business Expenses -->
+        <div class="col-md-4">
+            <div class="card shadow border-dark">
+                <div class="card-body text-dark">
+                    <h5 class="card-title"> {{ t['Business Expenses'] }}</h5>
+                    <p class="card-text fs-4 fw-bold">₹{{ "%.2f"|format(expenses_outflows) }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ Net Cash Flow -->
+        <div class="col-md-4">
+            <div class="card shadow {% if net_cash_flow < 0 %}border-danger{% else %}border-success{% endif %}">
+                <div class="card-body {% if net_cash_flow < 0 %}text-danger{% else %}text-success{% endif %}">
+                    <h5 class="card-title"> {{ t['Net Cash Flow'] }}</h5>
+                    <p class="card-text fs-4 fw-bold">₹{{ "%.2f"|format(net_cash_flow) }}</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+<!-- ✅ CSS Enhancements -->
+<style>
+.card {
+    border-radius: 10px;
+    transition: transform 0.2s ease-in-out;
+}
+.card:hover {
+    transform: scale(1.03);
+}
+@media (max-width: 768px) {
+    .btn {
+        width: 100%;
+    }
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

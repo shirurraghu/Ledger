@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid px-2 px-md-4 px-lg-5 pt-3 pt-md-4 pt-lg-5 pb-4 pb-md-5">
+
+    <!-- ✅ Page Header with Search & Add -->
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded shadow-sm bg-warning">
+        <h3 class="text-dark fw-bold mb-0">{{ t['Vendor Report'] }}  {{ date_filter }}</h3>
+    </div>
+
+<form method="get" action="{{ url_for('main.vendor_report') }}" class="mb-4 row g-2">
+    <div class="col-md-3 col-12">
+        <input type="date" name="from_date" class="form-control" value="{{ request.args.get('from_date', '') }}">
+    </div>
+    <div class="col-md-3 col-12">
+        <input type="date" name="to_date" class="form-control" value="{{ request.args.get('to_date', '') }}">
+    </div>
+    <div class="col-md-4 col-12">
+        <input type="text" name="search" class="form-control" placeholder="Search Vendor..." autocomplete="off" value="{{ request.args.get('search', '') }}">
+    </div>
+    <div class="col-md-2 col-12 d-flex align-items-end">
+        <button type="submit" class="btn btn-light w-100">{{ t['Search'] }}</button>
+    </div>
+    <div class="col-md-2 col-12 d-flex align-items-end">
+        <a href="{{ url_for('main.export_vendor_csv', from_date=request.args.get('from_date', ''), to_date=request.args.get('to_date', '')) }}" class="btn btn-light w-100">
+            {{ t['Export to CSV'] }}
+        </a>
+    </div>
+</form>
+
+<!-- ✅ Vendor Report -->
+<div class="container mt-3">
+    <div class="row g-3">
+        {% for vendor in vendor_report %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-store"></i> {{ vendor.vendor }}</h5>
+                    <p><strong>{{ t['Total Purchases'] }} :</strong> ₹{{ "%.2f" | format(vendor.total_purchases) }}</p>
+                    <p><strong>{{ t['Total Payments'] }} :</strong> ₹{{ "%.2f" | format(vendor.total_payments) }}</p>
+                    <p class="{% if vendor.balance_due < 0 %}text-danger{% else %}text-success{% endif %}">
+                        <strong>{{ t['Balance Due'] }} :</strong> ₹{{ "%.2f" | format(vendor.balance_due) }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

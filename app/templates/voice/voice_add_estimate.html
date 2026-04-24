@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+  .bg-gradient-blue {
+    background: linear-gradient(90deg, #007bff, #00bfff);
+    color: white !important;
+  }
+
+  .readonly-field {
+    padding: 10px 12px;
+    border: none;
+    background-color: #f1f3f5;
+    border-radius: 8px;
+    min-height: 40px;
+    width: 100%;
+    font-weight: 500;
+  }
+
+  .mic-button {
+    color: white;
+    background-color: gray;
+    border: none;
+    border-radius: 50%;
+    padding: 8px 10px;
+    margin-left: 10px;
+    cursor: pointer;
+  }
+
+  .mic-button.listening {
+    background-color: red;
+    animation: pulse 1s infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.6; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .item-box {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+</style>
+
+<div class="container mt-4">
+  <div class="p-3 rounded shadow-sm bg-gradient-blue mb-4 d-flex justify-content-between align-items-center">
+    <h3 class="mb-0 text-white fw-bold">🎤 {{ t['voice_add_estimate']|default("Voice Add Estimate") }}</h3>
+  </div>
+
+  <!-- Customer -->
+  <div class="mb-3">
+    <label class="form-label fw-semibold">{{ t['customername']|default("Customer Name") }}:</label>
+    <div class="d-flex align-items-center">
+      <div class="readonly-field" id="customername">❓</div>
+      <button class="mic-button" onclick="captureField('customername')"><i class="fas fa-microphone"></i></button>
+    </div>
+  </div>
+
+  <!-- Item Boxes -->
+  <div id="items-container"></div>
+
+  <button class="btn btn-outline-secondary w-100 mb-2" onclick="addNewItemBox()">➕ {{ t['add_item']|default("Add Item") }}</button>
+  <button class="btn btn-success w-100" onclick="submitEstimate()">✅ {{ t['submit']|default("Submit") }}</button>
+  <div class="mt-3 text-success fw-semibold text-center" id="status"></div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="postEstimateModal" tabindex="-1" aria-labelledby="estimateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-3 shadow">
+        <div class="modal-header bg-gradient-blue text-white">
+          <h5 class="modal-title" id="estimateModalLabel">✅ {{ t['estimate_saved']|default("Estimate Saved") }}</h5>
+        </div>
+        <div class="modal-body text-center">
+          {{ t['what_next']|default("What would you like to do next?") }}
+        </div>
+        <div class="modal-footer d-flex justify-content-between">
+          <button type="button" class="btn btn-dark w-50" onclick="startNewEstimate()" data-bs-dismiss="modal">➕ {{ t['add_estimate']|default("Add Estimate") }}</button>
+          <a href="{{ url_for('main.estimate_list') }}" class="btn btn-outline-primary w-50">📄 {{ t['view_estimates']|default("View Estimates") }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Links -->
+  <div class="d-flex justify-content-between mt-3">
+    <a class="btn btn-outline-dark w-50 me-2" href="{{ url_for('main.estimate_list') }}">📄 {{ t['view_estimates']|default("View Estimates") }}</a>
+    <a class="btn btn-outline-dark w-50" href="{{ url_for('main.voice_add_estimate_ui') }}">➕ {{ t['add_estimate']|default("Add Estimate") }}</a>
+  </div>
+</div>
+
+<script>
+const currentLang = "{{ session['lang'] or 'en' }}";
+const langMap = {
+  en: 'en-IN', kn: 'kn-IN', hi: 'hi-IN', ta: 'ta-IN',
+  te: 'te-IN', ml: 'ml-IN', bn: 'bn-IN'
+};
+
+let estimateData = { customername: '', items: [] };
+
+function captureField(field, index = null) {
+  const btn = event.currentTarget;
+  btn.classList.add('listening');
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = langMap[currentLang] || 'en-IN';
+  recognition.interimResults = false;
+  recognition.start();
+
+  document.getElementById('status').innerText = `🎤 Listening for ${field}...`;
+
+  recognition.onresult = (event) => {
+    const text = event.results[0][0].transcript.trim();
+    if (field === 'customername') {
+      estimateData.customername = text;
+      document.getElementById('customername').innerText = text;
+    } else {
+      document.getElementById(`${field}-${index}`).innerText = text;
+      estimateData.items[index][field] = text;
+    }
+    document.getElementById('status').innerText = `✅ Captured ${field}`;
+    btn.classList.remove('listening');
+  };
+
+  recognition.onerror = (event) => {
+    document.getElementById('status').innerText = `❌ Error: ${event.error}`;
+    btn.classList.remove('listening');
+  };
+}
+
+function addNewItemBox() {
+  const idx = estimateData.items.length;
+  estimateData.items.push({ itemname: '', quantity: '', rate: '', tax_percent: '' });
+
+  const box = document.createElement('div');
+  box.className = 'item-box';
+  box.innerHTML = `
+    <div class="mb-2"><strong>{{ t['itemname']|default("Item Name") }}:</strong>
+      <div class="d-flex align-items-center">
+        <div class="readonly-field" id="itemname-${idx}">❓</div>
+        <button class="mic-button" onclick="captureField('itemname', ${idx})"><i class="fas fa-microphone"></i></button>
+      </div>
+    </div>
+    <div class="mb-2"><strong>{{ t['quantity']|default("Quantity") }}:</strong>
+      <div class="d-flex align-items-center">
+        <div class="readonly-field" id="quantity-${idx}">❓</div>
+        <button class="mic-button" onclick="captureField('quantity', ${idx})"><i class="fas fa-microphone"></i></button>
+      </div>
+    </div>
+    <div class="mb-2"><strong>{{ t['rate']|default("Rate") }}:</strong>
+      <div class="d-flex align-items-center">
+        <div class="readonly-field" id="rate-${idx}">❓</div>
+        <button class="mic-button" onclick="captureField('rate', ${idx})"><i class="fas fa-microphone"></i></button>
+      </div>
+    </div>
+    <div class="mb-2"><strong>{{ t['tax_percent']|default("Tax %") }}:</strong>
+      <div class="d-flex align-items-center">
+        <div class="readonly-field" id="tax_percent-${idx}">❓</div>
+        <button class="mic-button" onclick="captureField('tax_percent', ${idx})"><i class="fas fa-microphone"></i></button>
+      </div>
+    </div>
+    <button class="btn btn-sm btn-danger mt-2" onclick="removeItem(${idx})">🗑 {{ t['remove']|default("Remove") }}</button>
+  `;
+  document.getElementById('items-container').appendChild(box);
+}
+
+function removeItem(index) {
+  estimateData.items[index] = null;
+  const el = document.getElementById(`itemname-${index}`).closest('.item-box');
+  if (el) el.remove();
+}
+
+function submitEstimate() {
+  estimateData.items = estimateData.items.filter(Boolean);
+  if (!estimateData.customername || estimateData.items.length === 0) {
+    document.getElementById('status').innerText = '❌ {{ t["validation_msg"]|default("Customer name and at least one item required.") }}';
+    return;
+  }
+
+  fetch('/voice_add_estimate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(estimateData)
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById('status').innerText = `✅ ${data.message}`;
+    const modal = new bootstrap.Modal(document.getElementById('postEstimateModal'));
+    modal.show();
+  })
+  .catch(() => {
+    document.getElementById('status').innerText = '❌ {{ t["submit_fail"]|default("Submission failed.") }}';
+  });
+}
+
+function startNewEstimate() {
+  estimateData = { customername: '', items: [] };
+  document.getElementById('customername').innerText = '❓';
+  document.getElementById('items-container').innerHTML = '';
+  document.getElementById('status').innerText = '';
+}
+</script>
+{% endblock %}

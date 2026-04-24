@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Floating Buttons</title>
+
+  <style>
+    #floatingContainer {
+      position: fixed;
+      bottom: 40px;  /* ✅ More space from bottom */
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1050;
+      display: flex;
+      flex-wrap: nowrap;  /* Prevents wrapping */
+      justify-content: center;
+      gap: 10px;
+
+      max-width: 100%;
+      width: calc(100% - 20px); /* Padding from edges */
+      padding: 8px 10px;
+      margin: 0 auto;
+
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(4px);
+    }
+
+    #floatingContainer a {
+      flex: 1 1 auto;
+      white-space: nowrap;
+      text-align: center;
+      font-size: 14px;
+      padding: 8px 12px;
+      min-width: 90px;
+      font-weight: 600;
+      border-radius: 8px;
+      color: #fff;
+      text-decoration: none;
+      transition: all 0.2s ease-in-out;
+    }
+
+    #floatingContainer a.btn-sale {
+      background: linear-gradient(135deg, #00c853, #43a047);  /* Green */
+    }
+
+    #floatingContainer a.btn-purchase {
+      background: linear-gradient(135deg, #1e88e5, #1565c0);  /* Blue */
+    }
+
+    #floatingContainer a.btn-expense {
+      background: linear-gradient(135deg, #e53935, #b71c1c);  /* Red */
+    }
+
+    #floatingContainer a.btn-estimate {
+      background: linear-gradient(135deg, #8e24aa, #6a1b9a);  /* Purple */
+    }
+
+    #floatingContainer a:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    @media (max-width: 480px) {
+      #floatingContainer {
+        bottom: 60px;  /* ✅ Extra space for mobile navbar */
+        gap: 6px;
+        width: calc(100% - 16px);
+        padding: 6px 8px;
+      }
+
+      #floatingContainer a {
+        font-size: 13px;
+        padding: 6px 10px;
+        min-width: 80px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Other page content -->
+
+  <!-- ✅ Floating Action Buttons -->
+  <div id="floatingContainer">
+    <a href="{{ url_for('main.addsale') }}" class="btn-sale">{{ t["SALE"] }}</a>
+    <a href="{{ url_for('main.addpurchase') }}" class="btn-purchase">{{ t["PURCHASE"] }}</a>
+    <a href="{{ url_for('main.addexpense') }}" class="btn-expense">{{ t["EXPENSE"] }} </a>
+    <a href="{{ url_for('main.add_estimate') }}" class="btn-estimate">{{ t["ESTIMATE"] }}</a>
+  </div>
+
+</body>
+</html>

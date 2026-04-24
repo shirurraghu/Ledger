@@ -1,0 +1,29 @@
+<!-- Razorpay Payment Form -->
+<div class="container my-5">
+  <div class="card shadow-sm border-0 rounded-4 mx-auto" style="max-width: 500px;">
+    <div class="card-header bg-warning text-dark text-center fw-bold fs-5">
+      {{ t['Pay Now'] or "Pay Now" }}
+    </div>
+    <div class="card-body text-center py-4">
+
+      <p class="mb-4 text-muted">{{ t['Access premium features securely with Razorpay.'] or "Access premium features securely with Razorpay." }}</p>
+
+      <form id="payment-form">
+        <script src="https://checkout.razorpay.com/v1/checkout.js"
+                data-key="{{ key_id }}"
+                data-amount="{{ order.amount }}"
+                data-currency="INR"
+                data-order_id="{{ order.id }}"
+                data-buttontext="{{ t['Pay'] }} ₹{{ (order.amount / 100)|round(2) }}"
+                data-name="BillBook SaaS"
+                data-description="{{ t['Access premium features'] or 'Access premium features' }}"
+                data-prefill.name="{{ current_user.username }}"
+                data-prefill.email="{{ current_user.email }}"
+                data-theme.color="#ffc107">
+        </script>
+        <input type="hidden" value="Hidden Element">
+      </form>
+
+    </div>
+  </div>
+</div>

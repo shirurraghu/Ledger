@@ -1,0 +1,125 @@
+<head>
+    
+</head>
+{% block content %}
+<body>
+<h1> Sale </h1>
+
+<form action="" method="post">
+{{ form.hidden_tag() }}
+<p>
+{{ form.customername.label }}
+{{ form.customername }}
+
+<table class="order-list">
+    <thead>
+        <tr>
+            <th>Item </th>
+            <th>Quantity </th>
+            <th>Rate </th>
+            <th>TAX %</th>
+            <th>TAX Amount </th>
+            <th> Sub Total </th>
+            <th> Action </th>
+            
+    
+        </tr>
+    </thead>
+    <tbody>
+        <tr> 
+		<div id="items">
+        <div class="item">
+            <td>             <input type="text" name="itemname" placeholder="Item Name">
+</td>
+            <td> {{ form.quantity(class="form-control") }} </td>
+            <td> {{ form.rate(class="form-control") }} </td>
+            <td> {{ form.tax(class="form-control") }}  </td>
+            <td> {{ form.tax_amount(class="form-control") }} </td>
+            <td> {{ form.subtotal(class="form-control") }} </td>
+            <td> <p>Total Amount: <span id="total_amount"> {{form.total_amount(class="form-control")}}</span></p>
+            <td><a class="deleteRow"> x </a></td>
+    
+        </tr>
+    </tbody>
+    <tr>
+            <td> {{ form.payment_terms(class="form-control") }} </td>
+    
+</td>
+</tr>
+    <tf><tr>
+            <td colspan="5" style="text-align: center;">
+                <input type="button" id="addrow" value="Add Product" />
+            </td>
+
+        </tr>
+    </tfoot>
+    </tbody>
+                      
+</table>
+{{ form.submit(class="form-control") }}
+
+
+</form>
+
+{% endblock %}
+</p></form></body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function() {
+    var counter = 1;
+    
+    $("#addrow").on("click", function () {
+        counter++;
+        
+        var newRow = $("<tr>");
+        var cols = "";
+            cols += '<td>  <input type="text" name="itemname" placeholder="Item Name"> </td>';
+            cols += '<td> {{ form.quantity(class="form-control") }} </td>';
+            cols += '<td> {{ form.rate(class="form-control") }} </td>';
+            cols += '<td> {{ form.tax(class="form-control") }} </td>';
+            cols += '<td> {{ form.tax_amount(class="form-control") }} </td>';
+            cols += '<td> {{ form.subtotal(class="form-control") }} </td>';
+        cols += '<td><a class="deleteRow"> x </a></td>';
+        newRow.append(cols);
+        
+        $("table.order-list").append(newRow);
+    });
+    
+    $("table.order-list").on("change", 'input[name^="quantity"], input[name^="rate"], input[name^="tax"], input[name^="total_amount"]', function (event) {
+        calculateRow($(this).closest("tr"));
+        calculateGrandTotal();
+    });
+    
+    $("table.order-list").on("click", "a.deleteRow", function (event) {
+        $(this).closest("tr").remove();
+        calculateGrandTotal();
+    });
+});
+    
+function calculateRow(row) {
+        var quantity = +row.find('input[name^="quantity"]').val() || 0;
+        var rate = +row.find('input[name^="rate"]').val() || 0;
+        var tax = +row.find('input[name^="tax"]').val() || 0;
+        var tax_amount = (quantity * rate * tax / 100); // Corrected tax formula
+
+        row.find('input[name^="subtotal"]').val(((rate * quantity) + tax_amount).toFixed(2));
+        row.find('input[name^="tax_amount"]').val(tax_amount.toFixed(2));
+    }
+
+    // Calculate Grand Total
+    function calculateGrandTotal() {
+        var grandTotal = 0;
+        $("table.order-list").find('input[name^="subtotal"]').each(function () {
+            var sub_total = +$(this).val() || 0;
+            grandTotal += sub_total;
+        });
+        $("#total_amount").text(grandTotal.toFixed(2));
+
+        $("#subtotal").text(total_amount.toFixed(2));
+    }
+</script>
+    </body>
+</html>

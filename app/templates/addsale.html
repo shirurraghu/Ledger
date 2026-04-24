@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- ✅ Custom Gradient Style -->
+<style>
+.bg-gradient-blue {
+    background: linear-gradient(90deg, #007bff, #00bfff);
+    color: white !important;
+}
+</style>
+
+<div class="container-fluid px-2 px-md-4 px-lg-5 pt-3 pt-md-4 pt-lg-5 pb-4 pb-md-5">
+
+    <!-- ✅ Add Customer Modal -->
+    <div class="modal fade" id="addCustomerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form id="addCustomerForm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ t['Add New Customer'] }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input name="name" placeholder="{{ t['Customer Name'] }}" required class="form-control mb-2">
+                        <input name="gst" placeholder="{{ t['GST'] }}" class="form-control mb-2">
+                        <input name="pan" placeholder="{{ t['PAN'] }}" class="form-control mb-2">
+                        <input name="email" placeholder="{{ t['Email'] }}" class="form-control mb-2">
+                        <input name="address" placeholder="{{ t['Address'] }}" class="form-control mb-2">
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" type="submit">{{ t['Add'] }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ✅ Sale Form -->
+    <div class="card shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded shadow-sm bg-gradient-blue">
+            <h4 class="mb-0 text-white"><b>{{ t['Add Sale'] }}</b></h4>
+            
+            <a href="/voice_add_sale_ui" class="btn btn-light text-dark border shadow-sm">
+  🎤 VOICE SALE
+</a>
+
+        </div>
+        <div class="card-body">
+            <form id="saleForm" method="post">
+                {{ form.hidden_tag() }}
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">{{ t['Customer'] }}</label>
+                        <select id="customername" name="customername" class="form-control select2">
+                            <option value="">{{ t['Select Customer'] }}</option>
+                            {% for customer in customer_list %}
+                                <option value="{{ customer.id }}">{{ customer.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">{{ t['Payment Terms'] }}</label>
+                        {{ form.payment_terms(class="form-control") }}
+                        {% if form.payment_terms.errors %}
+                            <div class="text-danger">
+                                {% for error in form.payment_terms.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <hr>
+                <div id="items-container">
+                    <h5>{{ t['Items'] }}</h5>
+                </div>
+                <button type="button" id="addItem" class="btn btn-secondary w-100 mb-3">{{ t['+ Add More Item'] }}</button>
+
+                <div class="text-end">
+                    <h4>{{ t['Total'] }}: ₹ <span id="grand-total">0.00</span></h4>
+                </div>
+
+                {{ form.submit(class="btn btn-primary btn-lg w-100") }}
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Select2 CSS & JS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+const allCustomers = {{ customer_list | tojson | safe }};
+const allItems = {{ item_list | tojson | safe }};
+
+function initSelect2($el, data, label = 'name') {
+    $el.select2({
+        data: data.map(obj => ({ id: obj.id, text: obj[label] })),
+        tags: true,
+        placeholder: "{{ t['Select or add'] }}",
+        allowClear: true,
+        width: '100%',
+        createTag: params => ({ id: params.term, text: params.term, newOption: true }),
+        templateResult: data => {
+            let $result = $("<span></span>").text(data.text);
+            if (data.newOption) $result.append(" <em>({{ t['add new'] }})</em>");
+            return $result;
+        }
+    });
+}
+
+function calculateTotal() {
+    let total = 0;
+    $(".subtotal").each(function () {
+        total += parseFloat($(this).val()) || 0;
+    });
+    $("#grand-total").text(total.toFixed(2));
+}
+
+function addItemRow(index) {
+    const $row = $(`
+        <div class="card item-group mb-3 shadow-sm p-2">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">{{ t['Item'] }}</label>
+                    <select name="items-${index}-itemname" class="form-control item-select"></select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">{{ t['Qty'] }}</label>
+                    <input type="number" step="any" name="items-${index}-quantity" class="form-control qty" value="1">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">{{ t['Rate'] }}</label>
+                    <input type="number" step="any" name="items-${index}-rate" class="form-control rate" placeholder="{{ t['Auto from Item'] }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">{{ t['Tax %'] }}</label>
+                    <input type="number" name="items-${index}-tax" class="form-control tax">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">{{ t['Subtotal'] }}</label>
+                    <input type="text" name="items-${index}-subtotal" class="form-control subtotal" readonly>
+                </div>
+                <div class="col-md-1 text-end">
+                    <button type="button" class="btn btn-danger btn-sm remove-item">−</button>
+                </div>
+            </div>
+        </div>
+    `);
+    $("#items-container").append($row);
+    initSelect2($row.find(".item-select"), allItems, "itemname");
+}
+
+$(document).ready(function () {
+    initSelect2($('#customername'), allCustomers);
+    addItemRow(0);
+
+    $(document).on("click", "#addItem", function () {
+        const index = $(".item-group").length;
+        addItemRow(index);
+    });
+
+    $(document).on("click", ".remove-item", function () {
+        $(this).closest(".item-group").remove();
+        calculateTotal();
+    });
+
+    $(document).on("select2:select", ".item-select", function (e) {
+        const data = e.params.data;
+        const $select = $(this);
+        const $row = $select.closest(".item-group");
+        const index = $select.attr("name").match(/\d+/)[0];
+
+        if (data.newOption) {
+            $.post("/additemajax", { name: data.text }, function (response) {
+                const newOption = new Option(response.itemname, response.id, true, true);
+                $select.append(newOption).trigger("change");
+                allItems.push({ id: response.id, itemname: response.itemname });
+            });
+        } else {
+            const selectedItem = allItems.find(item => item.id === parseInt(data.id));
+            if (selectedItem) {
+                if (selectedItem.selling_price !== undefined) {
+                    $(`[name="items-${index}-rate"]`).val(parseFloat(selectedItem.selling_price).toFixed(2));
+                }
+                if (selectedItem.tax_percent !== undefined) {
+                    $(`[name="items-${index}-tax"]`).val(parseFloat(selectedItem.tax_percent).toFixed(2));
+                }
+                $(`[name="items-${index}-rate"], [name="items-${index}-tax"]`).trigger("input");
+            }
+        }
+    });
+
+    $(document).on("input", ".qty, .rate, .tax", function () {
+        const row = $(this).closest(".item-group");
+        const qty = parseFloat(row.find(".qty").val()) || 0;
+        const rate = parseFloat(row.find(".rate").val()) || 0;
+        const tax = parseFloat(row.find(".tax").val()) || 0;
+        const subtotal = qty * rate * (1 + tax / 100);
+        row.find(".subtotal").val(subtotal.toFixed(2));
+        calculateTotal();
+    });
+
+    $("#addCustomerForm").on("submit", function (e) {
+        e.preventDefault();
+        const formData = $(this).serialize();
+        $.post("/addcustomerajax", formData, function (response) {
+            if (response.success) {
+                const newCustomer = new Option(response.name, response.id, true, true);
+                $("#customername").append(newCustomer).trigger("change");
+                $("#addCustomerModal").modal('hide');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

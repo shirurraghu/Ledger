@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% block title %}{{ t["ADD_EXPENSE"] }}{% endblock %}
+
+{% block content %}
+
+<!-- ✅ Gradient Header Style -->
+<style>
+.bg-gradient-blue {
+  background: linear-gradient(90deg, #007bff, #00bfff);
+  color: white !important;
+}
+</style>
+
+<!-- ✅ Modal for Adding Category -->
+<div class="modal fade" id="categoryModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="expCategoryForm">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">{{ t["ADD_EXPENSE_CATEGORY"] }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" id="newExpCategoryName" class="form-control" placeholder="{{ t['ENTER_CATEGORY_NAME'] }}">
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary w-100">{{ t["SAVE"] }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Expense Form Card -->
+<div class="card shadow-sm border-0 rounded-4">
+  <div class="d-flex justify-content-between align-items-center p-3 rounded shadow-sm bg-gradient-blue mb-4">
+    <h3 class="mb-0 text-white fw-bold">💸 {{ t["ADD_EXPENSE"] }}</h3>
+    
+    <a href="/voice_add_expense_ui" class="btn btn-light text-dark border shadow-sm">
+  🎤 VOICE EXPENSE
+</a>
+  </div>
+
+  <div class="card-body pb-5">
+    <form id="expenseForm" method="POST" action="{{ url_for('main.addexpense') }}">
+      {{ form.hidden_tag() }}
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label class="form-label">{{ t["EXPENSE_CATEGORY"] }}</label>
+          {{ form.expence_category(class="form-control select2", id="expence_category") }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">{{ t["PAYMENT_TYPE"] }}</label>
+          {{ form.payment_type(class="form-control") }}
+        </div>
+      </div>
+
+      <div id="items-container">
+        {% for item_form in form.expense_items %}
+        <div class="row item-group mb-3">
+          <div class="col-md-3">
+            <label class="form-label">{{ t["ITEM"] }}</label>
+            {{ item_form.itemname(class="form-control itemname") }}
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">{{ t["QTY"] }}</label>
+            {{ item_form.quantity(class="form-control qty") }}
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">{{ t["RATE"] }}</label>
+            {{ item_form.rate(class="form-control rate") }}
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">{{ t["SUBTOTAL"] }}</label>
+            {{ item_form.amount(class="form-control subtotal", readonly=True) }}
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">{{ t["TOTAL"] }}</label>
+            {{ item_form.total_amount(class="form-control totalAmount", readonly=True) }}
+          </div>
+          <div class="col-md-1 d-flex align-items-end">
+            <button type="button" class="btn btn-outline-secondary remove-item">−</button>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <button type="button" id="addItem" class="btn btn-outline-secondary w-100 my-3">
+        ➕ {{ t["ADD_ROW"] }}
+      </button>
+
+      <div class="text-end">
+        <h4 class="mt-3 fw-bold">{{ t["GRAND_TOTAL"] }}: ₹<span id="grandTotal">0.00</span></h4>
+      </div>
+
+      <button type="submit" class="btn btn-success w-100 mt-3">
+        ✅ {{ t["SAVE_EXPENSE"] }}
+      </button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<!-- Select2 and jQuery -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
+<script>
+$(document).ready(function () {
+  $('#expence_category').select2({
+    placeholder: "{{ t['EXPENSE_CATEGORY'] }}",
+    allowClear: true,
+    tags: true,
+    createTag: function (params) {
+      return { id: params.term, text: params.term, newOption: true };
+    }
+  });
+
+  $('#expence_category').on('select2:select', function (e) {
+    if (e.params.data.newOption) {
+      $('#newExpCategoryName').val(e.params.data.text);
+      $('#categoryModal').modal('show');
+    }
+  });
+
+  $('#expCategoryForm').on('submit', function (e) {
+    e.preventDefault();
+    const name = $('#newExpCategoryName').val();
+    $.post('/addexpcategoryajax', { category_name: name }, function (res) {
+      if (res.success) {
+        const newOption = new Option(res.category_name, res.category_id, true, true);
+        $('#expence_category').append(newOption).trigger('change');
+        $('#categoryModal').modal('hide');
+      } else {
+        alert('Error adding category!');
+      }
+    });
+  });
+
+  function calculateRow(row) {
+    const qty = parseFloat(row.find(".qty").val()) || 0;
+    const rate = parseFloat(row.find(".rate").val()) || 0;
+    const subtotal = qty * rate;
+    row.find(".subtotal").val(subtotal.toFixed(2));
+    row.find(".totalAmount").val(subtotal.toFixed(2));
+  }
+
+  function calculateTotal() {
+    let total = 0;
+    $(".totalAmount").each(function () {
+      total += parseFloat($(this).val()) || 0;
+    });
+    $("#grandTotal").text(total.toFixed(2));
+  }
+
+  $('#items-container').on("input", ".qty, .rate", function () {
+    const row = $(this).closest(".item-group");
+    calculateRow(row);
+    calculateTotal();
+  });
+
+  $('#items-container').on("click", ".remove-item", function () {
+    $(this).closest(".item-group").remove();
+    calculateTotal();
+  });
+
+  $("#addItem").click(function () {
+    const index = $(".item-group").length;
+    const html = `
+      <div class="row item-group mb-3">
+        <div class="col-md-3"><input type="text" name="expense_items-${index}-itemname" class="form-control itemname" required></div>
+        <div class="col-md-2"><input type="number" name="expense_items-${index}-quantity" class="form-control qty" value="1" step="any"></div>
+        <div class="col-md-2"><input type="number" name="expense_items-${index}-rate" class="form-control rate" step="any"></div>
+        <div class="col-md-2"><input type="text" name="expense_items-${index}-amount" class="form-control subtotal" readonly></div>
+        <div class="col-md-2"><input type="text" name="expense_items-${index}-total_amount" class="form-control totalAmount" readonly></div>
+        <div class="col-md-1 d-flex align-items-end">
+          <button type="button" class="btn btn-outline-secondary remove-item">−</button>
+        </div>
+      </div>`;
+    $('#items-container').append(html);
+  });
+
+  $('#expenseForm').submit(function (e) {
+    let hasError = false;
+    $(".item-group").each(function () {
+      const item = $(this).find(".itemname").val().trim();
+      if (!item) {
+        alert("{{ t['ITEM_NAME_EMPTY'] }}");
+        hasError = true;
+        return false;
+      }
+    });
+    if (hasError) e.preventDefault();
+  });
+});
+</script>
+{% endblock %}

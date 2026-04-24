@@ -1,0 +1,49 @@
+<!-- templates/partials/scripts.html -->
+<script src="static/js/bootstrap.bundle.min.js"></script>
+{{ moment.include_moment() }}
+
+<script>
+/* Drag logic for floating buttons */
+document.addEventListener("DOMContentLoaded", function () {
+    let container = document.getElementById("floatingContainer");
+    let isDragging = false, startX, startY, offsetX, offsetY;
+
+    container.addEventListener("mousedown", startDrag);
+    container.addEventListener("touchstart", startDrag, { passive: false });
+
+    function startDrag(e) {
+        isDragging = true;
+        let touch = e.touches ? e.touches[0] : e;
+        offsetX = touch.clientX - container.getBoundingClientRect().left;
+        offsetY = touch.clientY - container.getBoundingClientRect().top;
+
+        document.addEventListener("mousemove", drag);
+        document.addEventListener("mouseup", stopDrag);
+        document.addEventListener("touchmove", drag, { passive: false });
+        document.addEventListener("touchend", stopDrag);
+    }
+
+    function drag(e) {
+        if (!isDragging) return;
+        let touch = e.touches ? e.touches[0] : e;
+        let x = touch.clientX - offsetX;
+        let y = touch.clientY - offsetY;
+
+        let maxX = window.innerWidth - container.offsetWidth;
+        let maxY = window.innerHeight - container.offsetHeight;
+
+        container.style.left = `${Math.min(Math.max(0, x), maxX)}px`;
+        container.style.top = `${Math.min(Math.max(0, y), maxY)}px`;
+        e.preventDefault();
+    }
+
+    function stopDrag() {
+        isDragging = false;
+        document.removeEventListener("mousemove", drag);
+        document.removeEventListener("mouseup", stopDrag);
+        document.removeEventListener("touchmove", drag);
+        document.removeEventListener("touchend", stopDrag);
+    }
+});
+</script>
+

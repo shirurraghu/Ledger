@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid px-2 px-md-4 px-lg-5 pt-3 pt-md-4 pt-lg-5 pb-4 pb-md-5">
+
+    <!-- ✅ Page Header with Search & Add -->
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded shadow-sm bg-warning">
+        <h3 class="text-dark fw-bold mb-0">{{ t['Profit & Loss Report'] }} - {{ date_filter }}</h3>
+    </div>
+
+    <!-- ✅ Profit & Loss Filter Section -->
+    <div class="container mt-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                
+                <form method="get" action="{{ url_for('main.profit_loss_report') }}" class="row g-3">
+                    <div class="col-md-4 col-12">
+                        <label class="form-label">{{ t['From Date'] }}</label>
+                        <input type="date" id="from_date" name="from_date" class="form-control" value="{{ request.args.get('from_date', '') }}">
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <label class="form-label">{{ t['To Date'] }}</label>
+                        <input type="date" id="to_date" name="to_date" class="form-control" value="{{ request.args.get('to_date', '') }}">
+                    </div>
+                    <div class="col-md-4 col-12 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">{{ t['Filter'] }}</button>
+                    </div>
+                </form>
+                <div class="text-end mt-2">
+                    <a href="{{ url_for('main.export_profit_loss_csv', from_date=request.args.get('from_date', ''), to_date=request.args.get('to_date', '')) }}" class="btn btn-success">
+                        {{ t['Export to CSV'] }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Profit & Loss Summary Cards -->
+    <div class="container mt-4">
+        <div class="row g-3">
+
+            <!-- ✅ Sales Revenue -->
+            <div class="col-md-4 col-12">
+                <div class="card shadow border-primary">
+                    <div class="card-body text-primary">
+                        <h5 class="card-title"><i class="fas fa-chart-line"></i> {{ t['Total Sales'] }}</h5>
+                        <p class="card-text fs-4 fw-bold">₹{{ "%.2f"|format(sales) }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ✅ Cost of Goods Sold (COGS) -->
+            <div class="col-md-4 col-12">
+                <div class="card shadow border-warning">
+                    <div class="card-body text-warning">
+                        <h5 class="card-title"><i class="fas fa-shopping-cart"></i> {{ t['Total Purchases (COGS)'] }}</h5>
+                        <p class="card-text fs-4 fw-bold">₹{{ "%.2f"|format(purchases) }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ✅ Gross Profit -->
+            <div class="col-md-4 col-12">
+                <div class="card shadow border-success">
+                    <div class="card-body text-success">
+                        <h5 class="card-title"><i class="fas fa-hand-holding-usd"></i> {{ t['Gross Profit'] }}</h5>
+                        <p class="card-text fs-4 fw-bold">₹{{ "%.2f"|format(gross_profit) }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ✅ Total Expenses -->
+            <div class="col-md-4 col-12">
+                <div class="card shadow border-danger">
+                    <div class="card-body text-danger">
+                        <h5 class="card-title"><i class="fas fa-wallet"></i> {{ t['Total Expenses'] }}</h5>
+                        <p class="card-text fs-4 fw-bold">₹{{ "%.2f"|format(total_expenses) }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ✅ Net Profit / Loss -->
+            <div class="col-md-4 col-12">
+                <div class="card shadow {% if net_profit < 0 %}border-danger{% else %}border-success{% endif %}">
+                    <div class="card-body {% if net_profit < 0 %}text-danger{% else %}text-success{% endif %}">
+                        <h5 class="card-title"><i class="fas fa-balance-scale"></i> {{ t['Net Profit'] }}</h5>
+                        <p class="card-text fs-4 fw-bold">₹{{ "%.2f"|format(net_profit) }}</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+<!-- ✅ CSS Enhancements -->
+<style>
+/* ✅ Improve Card UI */
+.card {
+    border-radius: 10px;
+    transition: transform 0.2s ease-in-out;
+}
+.card:hover {
+    transform: scale(1.03);
+}
+
+/* ✅ Improve Form Spacing */
+form .form-control {
+    padding: 12px;
+    font-size: 1rem;
+}
+
+/* ✅ Improve Mobile View */
+@media (max-width: 768px) {
+    .btn {
+        width: 100%;
+    }
+    .col-md-4.col-12 {
+        margin-bottom: 1rem;
+    }
+    .row.g-3 {
+        gap: 1rem;
+    }
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

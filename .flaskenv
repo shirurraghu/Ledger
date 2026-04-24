@@ -1,0 +1,2 @@
+FLASK_APP=ledger.py
+FLASK_DEBUG=1

@@ -1,0 +1,119 @@
+2025-07-02 21:01:43,980 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-02 21:02:49,332 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-02 21:03:32,841 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-02 21:36:30,990 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-02 21:37:17,003 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-02 21:38:21,603 ERROR: Exception on /voice_add_expense [POST] [in /home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py:1744]
+Traceback (most recent call last):
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 2529, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask_cors/extension.py", line 194, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "/home/raghavendra/FINAL/Ledger/app/routes.py", line 6163, in voice_add_expense
+    expense = Expense(
+  File "<string>", line 4, in __init__
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/orm/state.py", line 572, in _initialize_instance
+    manager.dispatch.init_failure(self, args, kwargs)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/orm/state.py", line 569, in _initialize_instance
+    manager.original_init(*mixed[1:], **kwargs)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/orm/decl_base.py", line 2175, in _declarative_constructor
+    raise TypeError(
+TypeError: 'category_id' is an invalid keyword argument for Expense
+2025-07-02 21:41:35,680 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-02 21:45:28,734 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-02 21:46:48,297 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-02 21:48:59,837 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 12:30:15,657 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 12:32:45,115 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 12:34:02,492 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 12:34:56,193 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 12:35:13,510 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 12:35:52,676 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 12:37:02,312 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 12:41:19,398 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]
+2025-07-03 12:42:50,977 ERROR: Exception on /voice_add_estimate [POST] [in /home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py:1744]
+Traceback (most recent call last):
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1964, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 942, in do_execute
+    cursor.execute(statement, parameters)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/MySQLdb/connections.py", line 280, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1048, "Column 'estimate_number' cannot be null")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 2529, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask_cors/extension.py", line 194, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "/home/raghavendra/FINAL/Ledger/app/routes.py", line 6250, in voice_add_estimate
+    db.session.flush()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/orm/scoping.py", line 938, in flush
+    return self._proxied.flush(objects=objects)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 4353, in flush
+    self._flush(objects)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 4489, in _flush
+    transaction.rollback(_capture_exception=True)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 4449, in _flush
+    flush_context.execute()
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/orm/persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1416, in execute
+    return meth(
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/sql/elements.py", line 516, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1638, in _execute_clauseelement
+    ret = self._execute_context(
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1843, in _execute_context
+    return self._exec_single_context(
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1983, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 2352, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1964, in _exec_single_context
+    self.dialect.do_execute(
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 942, in do_execute
+    cursor.execute(statement, parameters)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+  File "/home/raghavendra/venv/lib/python3.8/site-packages/MySQLdb/connections.py", line 280, in query
+    _mysql.connection.query(self, query)
+sqlalchemy.exc.IntegrityError: (MySQLdb.IntegrityError) (1048, "Column 'estimate_number' cannot be null")
+[SQL: INSERT INTO estimate (estimate_number, customer_id, date, total_amount, status, user_id) VALUES (%s, %s, %s, %s, %s, %s)]
+[parameters: (None, 13, datetime.datetime(2025, 7, 3, 7, 12, 50, 976431), 0.0, 'Estimate', 1)]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-07-03 12:44:39,921 INFO: Ledger App startup [in /home/raghavendra/FINAL/Ledger/app/__init__.py:94]

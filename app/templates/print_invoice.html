@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ t['Sale Invoice'] }} #{{ sale.id }}</title>
+    <style>
+        @font-face {
+            font-family: 'NotoKannada';
+            src: url("{{ url_for('static', filename='fonts/NotoSansKannada.ttf') }}");
+        }
+        body {
+            font-family: {% if lang == 'kn' %}'NotoKannada'{% else %}'Arial, sans-serif'{% endif %};
+            font-size: 15px;
+            margin: 20px;
+        }
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px 30px;
+            border: 1px solid #000;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 1px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header h2 {
+            margin: 5px 0;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section p {
+            margin: 2px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 6px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .totals {
+            margin-top: 15px;
+        }
+        .totals p {
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .paid, .due {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .paid {
+            color: green;
+        }
+        .due {
+            color: red;
+        }
+    </style>
+</head>
+<body onload="window.print()">
+
+<div class="invoice-box">
+
+    <!-- 🧾 Business Header -->
+    <div class="header">
+        <h2>{{ user.fullname or user.username }}</h2>
+        <p>{{ user.address }}</p>
+        <p>{{ t['Mobile'] }}: {{ user.phone or user.mobile }}</p>
+        <p>{{ t['Email'] }}: {{ user.email }}</p>
+        {% if user.gst %}
+        <p>{{ t['GSTIN'] }}: {{ user.gst }}</p>
+        {% endif %}
+    </div>
+
+    <!-- 📅 Invoice Info -->
+    <div class="section">
+        <p><strong>{{ t['Sale Invoice'] }} #:</strong> {{ sale.id }}</p>
+        <p><strong>{{ t['Date'] }}:</strong> {{ sale.invoice_date.strftime('%Y-%m-%d') }}</p>
+    </div>
+
+    <!-- 👤 Customer Info -->
+    <div class="section">
+        <p><strong>{{ t['Customer'] }}:</strong> {{ customer.name }}</p>
+        <p><strong>{{ t['Mobile'] }}:</strong> {{ customer.mobile }}</p>
+    </div>
+
+    <!-- 🧾 Sale Items -->
+    <table>
+        <thead>
+            <tr>
+                <th>{{ t['Item Name'] }}</th>
+                <th>{{ t['Qty'] }}</th>
+                <th>{{ t['Rate (Rs)'] }}</th>
+                <th>{{ t['Subtotal (Rs)'] }}</th>
+                <th>{{ t['Tax %'] }}</th>
+                <th>{{ t['Total (Rs)'] }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set ns = namespace(grand_total=0) %}
+            {% for item in sale_items %}
+                {% set total = item.subtotal + (item.subtotal * item.tax_percent / 100) %}
+                {% set ns.grand_total = ns.grand_total + total %}
+                <tr>
+                    <td>{{ item.item.itemname }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ '%.2f'|format(item.rate) }}</td>
+                    <td>₹{{ '%.2f'|format(item.subtotal) }}</td>
+                    <td>{{ item.tax_percent }}%</td>
+                    <td>₹{{ '%.2f'|format(total) }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="5" align="right"><strong>{{ t['Grand Total:'] }}</strong></td>
+                <td><strong>₹{{ '%.2f'|format(ns.grand_total) }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 💵 Payments Received -->
+    {% set ns2 = namespace(total_received=0) %}
+    {% for payment in received_payments %}
+        {% set ns2.total_received = ns2.total_received + payment.amount %}
+    {% endfor %}
+    {% set balance_due = sale.total_amount - ns2.total_received %}
+
+    {% if received_payments %}
+    <div class="section">
+        <h3>{{ t['Payments Received'] }}</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>{{ t['Received Amount'] }}</th>
+                    <th>{{ t['Payment Mode'] }}</th>
+                    <th>{{ t['Payment Date'] }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in received_payments %}
+                <tr>
+                    <td>₹{{ '%.2f'|format(payment.amount) }}</td>
+                    <td>{{ payment.payment_mode }}</td>
+                    <td>{{ payment.payment_date.strftime('%Y-%m-%d') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <!-- 📊 Totals Summary -->
+    <div class="totals">
+        <p>{{ t['Total Received:'] }} ₹{{ '%.2f'|format(ns2.total_received) }}</p>
+        <p>{{ t['Balance Due:'] }} ₹{{ '%.2f'|format(balance_due) }}</p>
+
+        {% if balance_due <= 0 %}
+        <p class="paid">✔️ {{ t['This invoice is fully paid.'] }}</p>
+        {% else %}
+        <p class="due">❌ {{ t['Payment Due: Rs '] }}{{ '%.2f'|format(balance_due) }}</p>
+        {% endif %}
+    </div>
+
+</div>
+
+</body>
+</html>

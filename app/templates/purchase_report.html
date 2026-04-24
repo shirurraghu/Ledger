@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-3 px-md-4 pt-4 pt-md-5 pb-4 form-bottom-padding">
+
+  <!-- 🔶 Header -->
+  <div class="custom-header mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+      <h2 class="text-dark fw-bold mb-2 mb-md-0">{{ t['PURCHASE REPORT']|replace('_', ' ') }}</h2>
+    </div>
+
+    <!-- 🔍 Filters -->
+    <form method="get" action="{{ url_for('main.purchase_report') }}" class="row g-2 mt-3">
+      <div class="col-12 col-md-4">
+        <label for="from_date" class="form-label">{{ t['From Date'] }}</label>
+        <input type="date" id="from_date" name="from_date" class="form-control"
+               value="{{ request.args.get('from_date', '') }}">
+      </div>
+      <div class="col-12 col-md-4">
+        <label for="to_date" class="form-label">{{ t['To Date'] }}</label>
+        <input type="date" id="to_date" name="to_date" class="form-control"
+               value="{{ request.args.get('to_date', '') }}">
+      </div>
+      <div class="col-12 col-md-4">
+        <label for="vendor_search" class="form-label">{{ t['Search Vendor'] }}</label>
+        <input type="text" id="vendor_search" name="search" class="form-control"
+               placeholder="Search Vendor..." value="{{ request.args.get('search', '') }}">
+      </div>
+      <div class="col-6 col-md-3 mt-2">
+        <button type="submit" class="btn btn-warning w-100 fw-semibold">{{ t['Search'] }}</button>
+      </div>
+      <div class="col-6 col-md-3 mt-2">
+        <a href="{{ url_for('main.export_purchase_csv', from_date=request.args.get('from_date', ''), to_date=request.args.get('to_date', ''), search=request.args.get('search', '')) }}"
+           class="btn btn-outline-dark w-100 fw-semibold">
+          {{ t['Export CSV'] }}
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <!-- 🧾 Purchase Cards -->
+  <div class="row g-3" id="sales-container">
+    {% include 'partials/purchase_results.html' %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function () {
+  function loadResults() {
+    $.ajax({
+      url: "{{ url_for('main.purchase_report') }}",
+      type: "GET",
+      data: {
+        search: $("#vendor_search").val(),
+        from_date: $("#from_date").val(),
+        to_date: $("#to_date").val()
+      },
+      headers: { "X-Requested-With": "XMLHttpRequest" },
+      success: function (data) {
+        $("#sales-container").html(data);
+
+        // ✅ Reinitialize Bootstrap dropdowns/tooltips
+        if (typeof bootstrap !== 'undefined') {
+          document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(function (el) {
+            new bootstrap.Dropdown(el);
+          });
+        }
+      }
+    });
+  }
+
+  $("#vendor_search, #from_date, #to_date").on("input change", function () {
+    loadResults();
+  });
+});
+</script>
+{% endblock %}

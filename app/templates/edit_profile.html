@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.bg-gradient-blue {
+    background: linear-gradient(90deg, #007bff, #00bfff);
+    color: white !important;
+}
+</style>
+
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <!-- ✅ Blue Gradient Header -->
+        <div class="bg-gradient-blue p-3 rounded-top">
+            <h4 class="mb-0 fw-bold text-center">👤 Edit Profile</h4>
+        </div>
+
+        <!-- ✅ Form Body -->
+        <div class="card-body p-4">
+            <form method="POST" action="{{ url_for('main.edit_profile') }}">
+                {{ form.hidden_tag() }}
+
+                <div class="mb-3">
+                    {{ form.username.label(class="form-label") }}
+                    {{ form.username(class="form-control", placeholder="Enter username") }}
+                    {% for error in form.username.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.aboute_me.label(class="form-label") }}
+                    {{ form.aboute_me(class="form-control", rows="3", placeholder="Tell us about yourself") }}
+                    {% for error in form.aboute_me.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.mobile.label(class="form-label") }}
+                    {{ form.mobile(class="form-control", placeholder="Mobile number") }}
+                    {% for error in form.mobile.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.address.label(class="form-label") }}
+                    {{ form.address(class="form-control", rows="2", placeholder="Address") }}
+                    {% for error in form.address.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.gst.label(class="form-label") }}
+                    {{ form.gst(class="form-control", placeholder="GSTIN (optional)") }}
+                    {% for error in form.gst.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="text-end">
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
